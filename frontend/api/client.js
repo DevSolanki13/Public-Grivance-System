@@ -3,7 +3,7 @@
  * Handles token attachment, multipart uploads, and unified error responses
  */
 
-const BASE_URL = '/api';
+const BASE_URL = import.meta.env?.VITE_API_URL || '/api';
 
 export async function request(endpoint, options = {}) {
   const url = endpoint.startsWith('http') ? endpoint : `${BASE_URL}${endpoint}`;

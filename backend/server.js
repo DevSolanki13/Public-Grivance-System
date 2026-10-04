@@ -17,7 +17,9 @@ dotenv.config();
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const UPLOADS_DIR = path.join(__dirname, 'uploads');
+const UPLOADS_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'uploads')
+  : path.join(__dirname, 'uploads');
 
 if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
@@ -34,12 +36,18 @@ app.use(
   })
 );
 
-// Strictly configured CORS (enforces CORS_ORIGIN)
+// Strictly configured CORS (enforces CORS_ORIGIN and allows Vercel preview/production domains)
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl during dev/testing) or matching configured origin
-      if (!origin || origin === CORS_ORIGIN || CORS_ORIGIN === '*' || process.env.NODE_ENV !== 'production') {
+      // Allow requests with no origin (e.g. mobile apps, curl during dev/testing) or matching configured origin or Vercel domains
+      if (
+        !origin ||
+        origin === CORS_ORIGIN ||
+        CORS_ORIGIN === '*' ||
+        process.env.NODE_ENV !== 'production' ||
+        (origin && origin.endsWith('.vercel.app'))
+      ) {
         callback(null, true);
       } else {
         callback(new Error(`CORS policy violation: Origin '${origin}' is not permitted.`));
@@ -102,6 +110,9 @@ const slaInterval = setInterval(() => {
     console.log(`[SLA Worker] Evaluated deadlines: ${updated} grievance(s) marked overdue/escalated.`);
   }
 }, 120 * 1000);
+if (slaInterval && typeof slaInterval.unref === 'function') {
+  slaInterval.unref();
+}
 
 // Graceful shutdown handling
 const cleanup = () => {

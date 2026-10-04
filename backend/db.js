@@ -5,7 +5,9 @@ import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const DB_FILE = path.join(__dirname, 'data/db.json');
+const DB_FILE = process.env.VERCEL
+  ? path.join('/tmp', 'db.json')
+  : path.join(__dirname, 'data/db.json');
 
 // Ensure data directory exists
 const dataDir = path.dirname(DB_FILE);
@@ -809,6 +811,17 @@ class DatabaseStore {
         // Sanity check parsed structure
         if (parsed && Array.isArray(parsed.users) && Array.isArray(parsed.grievances)) {
           return parsed;
+        }
+      } else if (process.env.VERCEL) {
+        // In Vercel serverless environment, copy initial data from bundled data/db.json if available
+        const seedPath = path.join(__dirname, 'data/db.json');
+        if (fs.existsSync(seedPath)) {
+          const raw = fs.readFileSync(seedPath, 'utf8');
+          const parsed = JSON.parse(raw);
+          if (parsed && Array.isArray(parsed.users) && Array.isArray(parsed.grievances)) {
+            this.save(parsed);
+            return parsed;
+          }
         }
       }
     } catch (e) {
