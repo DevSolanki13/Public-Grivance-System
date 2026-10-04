@@ -14,10 +14,6 @@ export default function PageLayout({
 }) {
   return (
     <div className={`page ${width}`}>
-      <div className="decor" aria-hidden="true">
-        <span className="s1" /><span className="s2" /><span className="s3" /><span className="s4" />
-      </div>
-
       <Navbar role={role} />
 
       {title && (

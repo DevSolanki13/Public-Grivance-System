@@ -85,6 +85,7 @@ export default function Navbar({ role }) {
           <Link to="/" className="brand">
             <i className="brand-mark" />
             Jan<span>Sewa</span>
+            <small lang="hi">जन सेवा</small>
           </Link>
 
           {user && (
