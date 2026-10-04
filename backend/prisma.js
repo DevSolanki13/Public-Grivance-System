@@ -1,6 +1,7 @@
 /**
- * Database client export (Prisma / Persistent DataStore instance)
- * Provides centralized data layer queries and persistence
+ * JanSewa Data Store Abstraction
+ * Central persistence gateway for domain operations.
+ * Isolates data operations so persistence engine can be migrated to Prisma / PostgreSQL seamlessly.
  */
 import { db } from './db.js';
 

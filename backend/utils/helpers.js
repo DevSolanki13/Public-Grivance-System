@@ -1,7 +1,22 @@
-export function generateComplaintId() {
+/**
+ * Server Helper Utilities
+ */
+
+export function generateComplaintId(existingGrievances = []) {
   const year = new Date().getFullYear();
-  const randomNum = Math.floor(10000 + Math.random() * 90000);
-  return `GRV-${year}-${randomNum}`;
+  const existingSet = new Set(
+    (existingGrievances || []).map((g) => (g.complaintId || '').toUpperCase())
+  );
+
+  let complaintId;
+  let attempts = 0;
+  do {
+    const randomNum = Math.floor(10000 + Math.random() * 90000);
+    complaintId = `GRV-${year}-${randomNum}`;
+    attempts++;
+  } while (existingSet.has(complaintId) && attempts < 100);
+
+  return complaintId;
 }
 
 export function generateNotificationId() {

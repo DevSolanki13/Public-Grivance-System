@@ -206,111 +206,113 @@ export default function Navbar({ role }) {
                 <NotificationDrawer />
               </div>
 
-              {/* Role Switcher Pill + Anchored Dropdown */}
-              <div style={{ position: 'relative' }} ref={roleMenuRef}>
-                <button
-                  type="button"
-                  id="switch-role-btn"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setRoleMenuOpen((prev) => !prev);
-                  }}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: 6,
-                    background: roleMenuOpen ? '#e0f2fe' : '#edf4f3',
-                    border: '1px solid var(--line)',
-                    borderRadius: 20,
-                    padding: '5px 12px',
-                    fontSize: 13,
-                    fontWeight: 700,
-                    cursor: 'pointer',
-                    color: 'var(--ink)',
-                    fontFamily: 'inherit',
-                    transition: 'all 0.15s ease',
-                  }}
-                  title="Switch role for testing"
-                >
-                  <span>⚡ Switch Role</span>
-                  <ChevronDown
-                    size={14}
-                    style={{
-                      transform: roleMenuOpen ? 'rotate(180deg)' : 'none',
-                      transition: 'transform 0.15s ease',
+              {/* Role Switcher Pill + Anchored Dropdown (Dev Mode Only) */}
+              {import.meta.env.DEV && (
+                <div style={{ position: 'relative' }} ref={roleMenuRef}>
+                  <button
+                    type="button"
+                    id="switch-role-btn"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setRoleMenuOpen((prev) => !prev);
                     }}
-                  />
-                </button>
-
-                {roleMenuOpen && (
-                  <div
-                    id="role-menu-dropdown"
                     style={{
-                      position: 'absolute',
-                      top: 'calc(100% + 8px)',
-                      right: 0,
-                      width: 220,
-                      background: '#ffffff',
-                      border: '1.5px solid var(--line)',
-                      borderRadius: 12,
-                      boxShadow: '0 12px 32px rgba(11, 61, 59, 0.22)',
-                      zIndex: 99999,
-                      padding: '6px 0',
+                      display: 'inline-flex',
+                      alignItems: 'center',
+                      gap: 6,
+                      background: roleMenuOpen ? '#e0f2fe' : '#edf4f3',
+                      border: '1px solid var(--line)',
+                      borderRadius: 20,
+                      padding: '5px 12px',
+                      fontSize: 13,
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                      color: 'var(--ink)',
+                      fontFamily: 'inherit',
+                      transition: 'all 0.15s ease',
                     }}
+                    title="Switch role for testing (Dev only)"
                   >
-                    <div
+                    <span>⚡ Switch Role</span>
+                    <ChevronDown
+                      size={14}
                       style={{
-                        padding: '6px 14px',
-                        fontSize: 11,
-                        fontWeight: 800,
-                        color: 'var(--ink-soft)',
-                        textTransform: 'uppercase',
-                        letterSpacing: '0.5px',
+                        transform: roleMenuOpen ? 'rotate(180deg)' : 'none',
+                        transition: 'transform 0.15s ease',
+                      }}
+                    />
+                  </button>
+
+                  {roleMenuOpen && (
+                    <div
+                      id="role-menu-dropdown"
+                      style={{
+                        position: 'absolute',
+                        top: 'calc(100% + 8px)',
+                        right: 0,
+                        width: 220,
+                        background: '#ffffff',
+                        border: '1.5px solid var(--line)',
+                        borderRadius: 12,
+                        boxShadow: '0 12px 32px rgba(11, 61, 59, 0.22)',
+                        zIndex: 99999,
+                        padding: '6px 0',
                       }}
                     >
-                      Preview As
-                    </div>
+                      <div
+                        style={{
+                          padding: '6px 14px',
+                          fontSize: 11,
+                          fontWeight: 800,
+                          color: 'var(--ink-soft)',
+                          textTransform: 'uppercase',
+                          letterSpacing: '0.5px',
+                        }}
+                      >
+                        Preview As
+                      </div>
 
-                    {roleOptions.map((opt) => {
-                      const isActive = user?.role === opt.role;
-                      return (
-                        <button
-                          key={opt.role}
-                          type="button"
-                          onClick={() => handleSwitchDemoRole(opt.role)}
-                          style={{
-                            width: '100%',
-                            padding: '8px 14px',
-                            textAlign: 'left',
-                            background: isActive ? '#f0fdfa' : 'none',
-                            border: 'none',
-                            cursor: 'pointer',
-                            fontSize: 13,
-                            fontFamily: 'inherit',
-                            fontWeight: isActive ? 800 : 600,
-                            color: isActive ? 'var(--accent-dark)' : 'var(--ink)',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                            transition: 'background 0.1s ease',
-                          }}
-                          onMouseEnter={(e) => {
-                            if (!isActive) e.currentTarget.style.background = '#f8fafc';
-                          }}
-                          onMouseLeave={(e) => {
-                            if (!isActive) e.currentTarget.style.background = 'none';
-                          }}
-                        >
-                          <span>
-                            {opt.icon} {opt.label} ({opt.persona.split(' ')[0]})
-                          </span>
-                          {isActive && <Check size={14} color="var(--accent-dark)" />}
-                        </button>
-                      );
-                    })}
-                  </div>
-                )}
-              </div>
+                      {roleOptions.map((opt) => {
+                        const isActive = user?.role === opt.role;
+                        return (
+                          <button
+                            key={opt.role}
+                            type="button"
+                            onClick={() => handleSwitchDemoRole(opt.role)}
+                            style={{
+                              width: '100%',
+                              padding: '8px 14px',
+                              textAlign: 'left',
+                              background: isActive ? '#f0fdfa' : 'none',
+                              border: 'none',
+                              cursor: 'pointer',
+                              fontSize: 13,
+                              fontFamily: 'inherit',
+                              fontWeight: isActive ? 800 : 600,
+                              color: isActive ? 'var(--accent-dark)' : 'var(--ink)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'space-between',
+                              transition: 'background 0.1s ease',
+                            }}
+                            onMouseEnter={(e) => {
+                              if (!isActive) e.currentTarget.style.background = '#f8fafc';
+                            }}
+                            onMouseLeave={(e) => {
+                              if (!isActive) e.currentTarget.style.background = 'none';
+                            }}
+                          >
+                            <span>
+                              {opt.icon} {opt.label} ({opt.persona.split(' ')[0]})
+                            </span>
+                            {isActive && <Check size={14} color="var(--accent-dark)" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              )}
 
               {/* Logout Button */}
               <button

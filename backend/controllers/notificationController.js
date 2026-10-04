@@ -17,7 +17,7 @@ export class NotificationController {
   static markRead(req, res, next) {
     try {
       const { id } = req.params;
-      const updated = NotificationService.markRead(id);
+      const updated = NotificationService.markRead(id, req.user);
       res.json({
         success: true,
         notification: updated,

@@ -54,7 +54,7 @@ export default function CitizenGrievanceDetail() {
         await load();
       }
     } catch (err) {
-      alert(err.message || 'Failed to start work.');
+      setError(err.message || 'Failed to start work.');
     } finally {
       setActionLoading(false);
     }

@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react';
 import { authApi } from '../api/authApi.js';
 
 const AuthContext = createContext(null);
@@ -8,32 +8,45 @@ export function AuthProvider({ children }) {
   const [token, setToken] = useState(() => localStorage.getItem('jansewa_token') || null);
   const [loading, setLoading] = useState(true);
 
-  // Restore session from token
+  const logout = useCallback(() => {
+    authApi.logout();
+    setToken(null);
+    setUser(null);
+  }, []);
+
+  // Restore session from token on initial app mount
   useEffect(() => {
-    async function loadUser() {
+    let isMounted = true;
+
+    async function restoreSession() {
       const savedToken = localStorage.getItem('jansewa_token');
       if (!savedToken) {
-        setLoading(false);
+        if (isMounted) setLoading(false);
         return;
       }
 
       try {
         const res = await authApi.getMe();
-        if (res.success && res.user) {
+        if (isMounted && res.success && res.user) {
           setUser(res.user);
-        } else {
+          setToken(savedToken);
+        } else if (isMounted) {
           logout();
         }
       } catch (err) {
         console.warn('Session expired or invalid:', err.message);
-        logout();
+        if (isMounted) logout();
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
-    loadUser();
-  }, [token]);
+    restoreSession();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [logout]);
 
   const login = async (email, password, role) => {
     const res = await authApi.login(email, password, role);
@@ -66,12 +79,6 @@ export function AuthProvider({ children }) {
       return res.user;
     }
     throw new Error(res.message || 'Role switch failed.');
-  };
-
-  const logout = () => {
-    authApi.logout();
-    setToken(null);
-    setUser(null);
   };
 
   const value = {

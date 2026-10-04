@@ -2,21 +2,26 @@ import { Router } from 'express';
 import { GrievanceController } from '../controllers/grievanceController.js';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/roleMiddleware.js';
-import { upload } from '../middleware/uploadMiddleware.js';
+import { uploadEvidence, uploadProof } from '../middleware/uploadMiddleware.js';
 
 const router = Router();
 
-// Public citizen tracking (no login required)
+// Public citizen tracking (no login required; personal data masked for privacy)
 router.get('/track/:complaintId', GrievanceController.trackPublic);
 
-// Authenticated routes
+// Authenticated civic routes
 router.use(authenticate);
 
 router.get('/', GrievanceController.getAll);
 router.get('/:id', GrievanceController.getById);
 
-// Citizen filing grievance with photo evidence (up to 5 images)
-router.post('/', upload.any(), GrievanceController.create);
+// Citizen filing grievance with photo evidence (max 5 photos)
+router.post(
+  '/',
+  requireRole('citizen', 'admin'),
+  uploadEvidence,
+  GrievanceController.create
+);
 
 // Status transition
 router.patch('/:id/status', GrievanceController.updateStatus);
@@ -28,15 +33,15 @@ router.post(
   GrievanceController.assignOfficer
 );
 
-// Officer / Admin: Submit resolution with photo proof (device camera or file upload)
+// Officer / Admin: Submit resolution with photo proof
 router.post(
   '/:id/resolve',
   requireRole('admin', 'officer'),
-  upload.any(),
+  uploadProof,
   GrievanceController.resolveWithProof
 );
 
-// Citizen / Admin: Verify resolution satisfaction or reopen
+// Citizen / Admin: Verify resolution satisfaction
 router.post(
   '/:id/verify',
   requireRole('admin', 'citizen'),

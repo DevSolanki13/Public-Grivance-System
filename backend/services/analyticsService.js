@@ -9,7 +9,7 @@ export class AnalyticsService {
     if (user?.role === 'citizen') {
       scoped = scoped.filter((g) => g.citizenId === user.id);
     } else if (user?.role === 'officer') {
-      scoped = scoped.filter((g) => g.assignedOfficerId === user.id);
+      scoped = scoped.filter((g) => g.assignedOfficerId === user.id || g.departmentId === user.departmentId);
     } else if (user?.role === 'department_head') {
       scoped = scoped.filter((g) => g.departmentId === user.departmentId);
     }
@@ -22,11 +22,22 @@ export class AnalyticsService {
     const reopened = scoped.filter((g) => g.status === 'REOPENED').length;
     const escalated = scoped.filter((g) => g.isEscalated).length;
 
+    // Accurate calculation: complaints currently active and overdue
     const overdue = scoped.filter((g) => !['CLOSED', 'REJECTED'].includes(g.status) && computeSLAStatus(g).isOverdue).length;
 
-    const slaCompliance = total > 0 ? Math.max(0, Math.round(((total - overdue) / total) * 100)) : 100;
+    // Accurate compliance: account for both currently overdue complaints and complaints resolved late
+    const breachedTotal = scoped.filter((g) => {
+      if (['CLOSED', 'REJECTED'].includes(g.status)) {
+        const finishTime = new Date(g.closedAt || g.resolvedAt || g.updatedAt).getTime();
+        const deadlineTime = new Date(g.slaDeadline).getTime();
+        return !isNaN(finishTime) && !isNaN(deadlineTime) && finishTime > deadlineTime;
+      }
+      return computeSLAStatus(g).isOverdue;
+    }).length;
 
-    // Calculate average resolution time for closed complaints
+    const slaCompliance = total > 0 ? Math.max(0, Math.round(((total - breachedTotal) / total) * 100)) : 100;
+
+    // Calculate average resolution time for closed complaints in hours
     const closed = scoped.filter((g) => g.status === 'CLOSED' && g.closedAt && g.createdAt);
     let avgHours = 0;
     if (closed.length > 0) {
@@ -51,9 +62,19 @@ export class AnalyticsService {
     };
   }
 
-  static getMapMarkers() {
-    const grievances = db.getGrievances();
-    const wardCoords = [
+  static getMapMarkers(user) {
+    let grievances = db.getGrievances();
+
+    // Scoping for authenticated roles
+    if (user?.role === 'citizen') {
+      grievances = grievances.filter((g) => g.citizenId === user.id);
+    } else if (user?.role === 'department_head') {
+      grievances = grievances.filter((g) => g.departmentId === user.departmentId);
+    } else if (user?.role === 'officer') {
+      grievances = grievances.filter((g) => g.assignedOfficerId === user.id || g.departmentId === user.departmentId);
+    }
+
+    const defaultWardCoords = [
       { lat: 19.3052, lng: 72.8480, area: 'Ward 1: Station West' },
       { lat: 19.2965, lng: 72.8540, area: 'Ward 2: Market Area' },
       { lat: 19.3120, lng: 72.8620, area: 'Ward 3: Industrial East' },
@@ -63,13 +84,15 @@ export class AnalyticsService {
     ];
 
     return grievances.map((g, index) => {
-      const fallback = wardCoords[index % wardCoords.length];
-      const latitude = g.location?.latitude && g.location.latitude !== 19.3012
-        ? g.location.latitude
-        : fallback.lat + ((index * 0.002) % 0.005);
-      const longitude = g.location?.longitude && g.location.longitude !== 72.8519
-        ? g.location.longitude
-        : fallback.lng + (((index * 0.003) % 0.006) - 0.002);
+      const fallback = defaultWardCoords[index % defaultWardCoords.length];
+      const hasValidCoords =
+        typeof g.location?.latitude === 'number' &&
+        !isNaN(g.location.latitude) &&
+        typeof g.location?.longitude === 'number' &&
+        !isNaN(g.location.longitude);
+
+      const latitude = hasValidCoords ? g.location.latitude : fallback.lat;
+      const longitude = hasValidCoords ? g.location.longitude : fallback.lng;
 
       return {
         id: g.id,
@@ -96,7 +119,14 @@ export class AnalyticsService {
     });
   }
 
-  static getAuditLogs() {
-    return db.getAuditLogs();
+  static getAuditLogs(user) {
+    let logs = db.getAuditLogs();
+    if (user?.role === 'department_head') {
+      const deptGrievanceIds = new Set(
+        db.getGrievances().filter((g) => g.departmentId === user.departmentId).map((g) => g.id)
+      );
+      logs = logs.filter((l) => deptGrievanceIds.has(l.grievanceId));
+    }
+    return logs;
   }
 }

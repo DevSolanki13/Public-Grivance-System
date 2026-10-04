@@ -15,7 +15,7 @@ export class AnalyticsController {
 
   static getMapMarkers(req, res, next) {
     try {
-      const markers = AnalyticsService.getMapMarkers();
+      const markers = AnalyticsService.getMapMarkers(req.user);
       res.json({
         success: true,
         count: markers.length,
@@ -28,7 +28,7 @@ export class AnalyticsController {
 
   static getAuditLogs(req, res, next) {
     try {
-      const logs = AnalyticsService.getAuditLogs();
+      const logs = AnalyticsService.getAuditLogs(req.user);
       res.json({
         success: true,
         count: logs.length,

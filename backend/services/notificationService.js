@@ -1,5 +1,6 @@
 import { db } from '../db.js';
 import { generateNotificationId } from '../utils/helpers.js';
+import { HttpError } from '../middleware/errorHandler.js';
 
 export class NotificationService {
   static createNotification({ userId, title, message, type = 'info', grievanceId = null }) {
@@ -10,6 +11,7 @@ export class NotificationService {
       userId,
       title,
       message,
+      link: grievanceId ? `/citizen/grievance/${grievanceId}` : null,
       type,
       grievanceId,
       isRead: false,
@@ -26,7 +28,16 @@ export class NotificationService {
     return list;
   }
 
-  static markRead(notifId) {
+  static markRead(notifId, user) {
+    const notif = db.getNotifications().find((n) => n.id === notifId);
+    if (!notif) {
+      throw new HttpError(404, 'Notification not found.');
+    }
+
+    if (user.role !== 'admin' && notif.userId !== user.id) {
+      throw new HttpError(403, 'Forbidden: You cannot modify notifications belonging to another user.');
+    }
+
     return db.markNotificationRead(notifId);
   }
 

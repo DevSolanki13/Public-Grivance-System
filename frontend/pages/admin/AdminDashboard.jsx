@@ -45,7 +45,7 @@ export default function AdminDashboard() {
       await api.resetData();
       await loadData();
     } catch (err) {
-      alert('Failed to reset data.');
+      setError(err.message || 'Failed to reset data.');
     } finally {
       setResetting(false);
     }

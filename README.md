@@ -1,6 +1,6 @@
 # JanSewa - Public Grievance Redressal & Civic SLA Monitoring Platform
 
-A fullstack municipal public grievance redressal platform engineered with strict accountability workflows, SLA countdown tracking, officer resolution proof verification, citizen reopen & escalation mechanics, and multi-role access control.
+A fullstack civic governance and municipal public grievance redressal platform engineered with strict accountability workflows, SLA deadline monitoring, cryptographic resolution proof verification, citizen reopen & escalation mechanics, and role-based access control (RBAC).
 
 ---
 
@@ -10,102 +10,239 @@ A fullstack municipal public grievance redressal platform engineered with strict
 JanSewa-Complete/
 ├── backend/
 │   ├── constants/             # Domain constants, roles, and status definitions
-│   │   └── index.js
+│   │   └── index.js           # Re-exports single source of truth
 │   ├── controllers/           # HTTP request/response handlers only (extracts req, invokes service)
-│   │   ├── authController.js
-│   │   ├── grievanceController.js
-│   │   ├── departmentController.js
 │   │   ├── analyticsController.js
+│   │   ├── authController.js
+│   │   ├── departmentController.js
+│   │   ├── grievanceController.js
 │   │   └── notificationController.js
-│   ├── middleware/            # JWT authentication, RBAC, and file/camera uploads
-│   │   ├── authMiddleware.js
-│   │   ├── roleMiddleware.js
-│   │   ├── uploadMiddleware.js
-│   │   └── errorHandler.js
+│   ├── middleware/            # JWT authentication, RBAC, file upload validation, error handling
+│   │   ├── authMiddleware.js  # Signature verification & session extraction (no backdoors)
+│   │   ├── errorHandler.js    # Sanitized production error handler & HttpError class
+│   │   ├── roleMiddleware.js  # Role-Based Access Control (RBAC) guard
+│   │   └── uploadMiddleware.js# Extension/MIME allowlist check against Stored-XSS
 │   ├── routes/                # Express route declarations (pure endpoint mapping)
-│   │   ├── authRoutes.js
-│   │   ├── grievanceRoutes.js
-│   │   ├── departmentRoutes.js
 │   │   ├── analyticsRoutes.js
+│   │   ├── authRoutes.js
+│   │   ├── departmentRoutes.js
+│   │   ├── grievanceRoutes.js
 │   │   ├── notificationRoutes.js
 │   │   └── index.js
-│   ├── services/              # Core domain business logic and database queries
-│   │   ├── authService.js
-│   │   ├── grievanceService.js
-│   │   ├── departmentService.js
+│   ├── services/              # Core domain business logic, state machine & data store queries
 │   │   ├── analyticsService.js
+│   │   ├── authService.js
+│   │   ├── departmentService.js
+│   │   ├── grievanceService.js
 │   │   ├── notificationService.js
-│   │   ├── stateMachine.js
-│   │   └── slaService.js
+│   │   ├── slaService.js
+│   │   └── stateMachine.js    # Strict lifecycle transition validator
+│   ├── test/                  # Built-in node:test unit test suite
+│   │   ├── slaService.test.js
+│   │   └── stateMachine.test.js
 │   ├── utils/                 # Server helper utilities
-│   │   ├── token.js
-│   │   └── helpers.js
-│   ├── prisma.js              # Shared Prisma / persistent data client
-│   ├── db.js                  # Persistent DataStore instance with seed data
-│   ├── server.js              # Express app entry point
+│   │   ├── helpers.js         # Unique complaint & log ID generators
+│   │   └── token.js           # Secure JWT generation and verification
+│   ├── prisma.js              # Central persistence gateway / repository abstraction
+│   ├── db.js                  # Persistent DataStore engine with atomic JSON writes
+│   ├── server.js              # Express app entry point with Helmet, CORS & graceful shutdown
 │   ├── package.json
-│   └── .env
+│   └── .env.example
 │
 ├── frontend/
-│   ├── api/                   # API gateway functions (fetch/axios calls)
-│   │   ├── client.js          # Base HTTP client with JWT header attachment & error unwrapping
-│   │   ├── authApi.js
-│   │   ├── grievanceApi.js
-│   │   ├── departmentApi.js
+│   ├── api/                   # Dedicated API gateway functions (no inline fetch in views)
 │   │   ├── analyticsApi.js
+│   │   ├── authApi.js
+│   │   ├── client.js          # Base HTTP client with JWT header & error normalization
+│   │   ├── departmentApi.js
+│   │   ├── grievanceApi.js
 │   │   ├── notificationApi.js
-│   │   └── index.js           # Re-exports modular APIs and unified gateway
-│   ├── components/            # View containers, modals, and UI components
+│   │   └── index.js           # Re-exports unified gateway object
+│   ├── components/            # Reusable UI components and modal containers
 │   │   ├── common/            # StatusBadge, PriorityBadge, SLABadge, StatCard, Stepper, PhotoUploader
-│   │   ├── layout/            # Navbar, Footer, PageLayout
 │   │   ├── grievance/         # ResolutionModal, VerificationModal, AssignModal
-│   │   ├── notifications/     # NotificationDrawer (anchored right below bell with click-outside)
-│   │   └── pages/             # View containers (Citizen, Officer, Department, Admin, Public, Auth)
-│   ├── context/               # AuthContext (multi-role & 1-click test switcher) and NotificationContext
+│   │   ├── layout/            # Navbar (with dev-gated switcher), Footer, PageLayout
+│   │   └── notifications/     # NotificationDrawer
+│   ├── context/               # AuthContext & NotificationContext
+│   ├── pages/                 # Route-level view pages (code-split via React.lazy)
+│   │   ├── admin/             # AdminDashboard, ComplaintMap (Leaflet GIS), AuditLogs
+│   │   ├── auth/              # Login, Register
+│   │   ├── citizen/           # CitizenDashboard, SubmitGrievance, MyGrievances, CitizenGrievanceDetail
+│   │   ├── department/        # DepartmentDashboard, OfficerWorkload
+│   │   ├── officer/           # OfficerDashboard
+│   │   └── public/            # Home, Transparency, TrackPublic
 │   ├── utils/                 # Client formatters and helpers
-│   │   ├── formatters.js
-│   │   └── helpers.js
-│   ├── App.jsx                # Main app router/shell with role protection
-│   ├── main.jsx               # React DOM root entry
-│   ├── index.css              # Authentic JanSewa aesthetic stylesheet
+│   ├── App.jsx                # Main app router with lazy loading & RBAC protection
+│   ├── main.jsx               # React 19 entry point
+│   ├── index.css              # Custom municipal civic design system
 │   ├── index.html
-│   ├── vite.config.js         # Vite dev server with proxy and bypass configuration
+│   ├── vite.config.js         # Vite dev configuration with backend reverse proxy
 │   └── package.json
 │
 ├── package.json               # Root runner script (concurrently runs backend + frontend)
+├── .gitignore                 # Excludes .env, uploads, runtime db.json, node_modules
 └── README.md
 ```
 
 ---
 
-## 🏛️ Architectural Rules & Separation of Concerns
+## 🏛️ State Machine & Lifecycle Transitions
 
-1. **Strict 3-Tier Backend Separation**:
-   - **Routes (`backend/routes/`)**: Pure endpoint definitions mapping HTTP verbs and URLs to controller handlers.
-   - **Controllers (`backend/controllers/`)**: HTTP request/response handlers only. They parse query parameters, body payloads, and route parameters, call the corresponding service methods, and return formatted JSON responses.
-   - **Services (`backend/services/`)**: Encapsulate all civic business logic, SLA deadline calculation, role lifecycle permissions, audit logging, and data persistence.
+All grievance transitions are strictly governed by `backend/services/stateMachine.js`:
 
-2. **Decoupled Client-Side API Gateway**:
-   - All network calls are isolated into `frontend/api/` (`authApi.js`, `grievanceApi.js`, `departmentApi.js`, `analyticsApi.js`, `notificationApi.js`).
-   - UI components never make inline `fetch` or `axios` calls; they consume dedicated gateway functions.
+```mermaid
+stateDiagram-v2
+    [*] --> SUBMITTED: Citizen Submits Complaint
+    SUBMITTED --> UNDER_REVIEW: System / Dept Head Reviews
+    SUBMITTED --> ASSIGNED: Dept Head Assigns Field Officer
+    SUBMITTED --> REJECTED: Invalid / Duplicate
+    UNDER_REVIEW --> ASSIGNED: Dept Head Assigns Officer
+    ASSIGNED --> IN_PROGRESS: Officer Commences Field Work
+    IN_PROGRESS --> AWAITING_VERIFICATION: Officer Uploads Proof Photo
+    AWAITING_VERIFICATION --> CLOSED: Citizen Confirms Satisfaction (1-5★)
+    AWAITING_VERIFICATION --> REOPENED: Citizen Rejects Resolution
+    REOPENED --> ASSIGNED: Reassigned with Fresh Urgent SLA
+    REOPENED --> IN_PROGRESS: Officer Re-inspects Site
+    CLOSED --> REOPENED: Citizen Reopens within Warranty Window
+    CLOSED --> [*]
+    REJECTED --> [*]
+```
 
-3. **Multi-Input Photo & Camera Evidence**:
-   - `PhotoUploader` supports both direct file uploads and live camera capture (`navigator.mediaDevices.getUserMedia` / device photo capture) for citizens registering complaints and field officers attaching resolution proof.
+### Role Transition Matrix
 
-4. **1-Click Test Role Portals**:
-   - Test roles can be switched instantly via the navbar test dropdown (`Citizen`, `Field Officer`, `Department Head`, `Chief Administrator`).
+| Action | Allowed Roles | Guard Conditions |
+|---|---|---|
+| **Submit Grievance** | `citizen`, `admin` | Valid subject, description, priority, category |
+| **Assign Officer** | `department_head`, `admin` | Officer must belong to grievance department; Dept Head must belong to same dept |
+| **Start Work** | `officer`, `admin` | Officer must be the assigned officer (`assignedOfficerId === user.id`) |
+| **Submit Resolution** | `officer`, `admin` | Officer must be assigned; requires min 10-char summary + photographic evidence |
+| **Verify Satisfaction** | `citizen`, `admin` | Caller must be grievance creator (`citizenId === user.id`); rating 1–5 |
+| **Reopen Case** | `citizen`, `admin` | Caller must be creator; requires min 5-char reason; resets SLA deadline |
 
 ---
 
-## 🚀 Running the Project
+## 🔐 Security Hardening Summary
+
+1. **No Backdoor Authentication**: Removed mock authentication headers and public role impersonation.
+2. **Encrypted Passwords**: All user passwords stored as salted `bcrypt` hashes (`bcrypt.hashSync(pass, 10)`). Plain-text `rawPassword` properties are completely eliminated.
+3. **Broken Object-Level Authorization (IDOR) Defenses**:
+   - `GET /api/grievances/:id`: Verifies ownership for citizens, department match for officers/heads.
+   - `GET /api/grievances`: Citizens receive only their own complaints.
+   - `POST /api/grievances/:id/verify`: Only the complaint creator can verify satisfaction or reopen.
+   - `POST /api/grievances/:id/resolve`: Only the assigned officer can upload resolution proof.
+   - `PATCH /api/notifications/:id/read`: Only the notification owner can mark it as read.
+   - `GET /api/analytics/audit-logs`: Restricted to `admin` and `department_head`.
+4. **Stored-XSS File Upload Defense**:
+   - Client-sent filenames and extensions are stripped and sanitized.
+   - MIME types are mapped strictly to safe extensions (`image/jpeg` $\rightarrow$ `.jpg`, `image/png` $\rightarrow$ `.png`, `image/webp` $\rightarrow$ `.webp`).
+   - Non-image files (e.g. `x.html`, `.svg`, `.exe`) are rejected with `400 Bad Request`.
+   - Upload directory serves static files with `X-Content-Type-Options: nosniff`.
+5. **Brute-Force & Denial-of-Service Mitigations**:
+   - Rate limiting via `express-rate-limit` on `/api/auth/login` and `/api/auth/register`.
+   - Security response headers via `helmet`.
+   - Body parser payload size capped at 1 MB.
+   - Protected database wipe endpoint (`/api/reset-data`) requiring admin privileges and disabled in production.
+
+---
+
+## 👥 Seed Demo Credentials
+
+All seed accounts use the default password: **`password123`**
+
+| Role | Name | Email | Department |
+|---|---|---|---|
+| **Citizen** | Palak Rathod | `palak.rathod@example.com` | Public Citizen (Ward 1) |
+| **Citizen** | Aarav Mehta | `aarav.mehta@example.com` | Public Citizen (Ward 4) |
+| **Field Officer** | Rahul Sharma | `rahul.sharma@pwd.gov.in` | Roads & Infrastructure |
+| **Field Officer** | Amit Vernekar | `amit.vernekar@sanitation.gov.in` | Sanitation & Solid Waste |
+| **Field Officer** | Suresh More | `suresh.more@water.gov.in` | Water Supply & Sewage |
+| **Field Officer** | Vinay Nair | `vinay.nair@electrical.gov.in` | Street Lighting & Electricity |
+| **Dept Head** | Ramesh Kulkarni | `pwd@jansewa.gov.in` | Roads & Infrastructure |
+| **Dept Head** | Sneha Iyer | `sanitation@jansewa.gov.in` | Sanitation & Solid Waste |
+| **Dept Head** | Vikas Patil | `water@jansewa.gov.in` | Water Supply & Sewage |
+| **Dept Head** | Pooja Deshmukh | `electrical@jansewa.gov.in` | Street Lighting & Electricity |
+| **Chief Admin** | Admin Officer | `admin@jansewa.gov.in` | Municipal Commissioner |
+
+---
+
+## 📡 REST API Specification
+
+### Authentication (`/api/auth`)
+- `POST /api/auth/register` – Register citizen account (validates email regex, min 8-char password)
+- `POST /api/auth/login` – Authenticate with email & password (rate-limited, returns signed JWT)
+- `GET /api/auth/me` – Retrieve profile for currently authenticated user
+
+### Grievances (`/api/grievances`)
+- `GET /api/grievances/track/:complaintId` – Public tracking view (masks citizen/officer personal contact info)
+- `GET /api/grievances` – Role-scoped grievance listing
+- `GET /api/grievances/:id` – Detailed grievance inspection with SLA information (enforces IDOR)
+- `POST /api/grievances` – File new grievance with up to 5 photos (`evidence` field)
+- `PATCH /api/grievances/:id/status` – Advance status through state machine
+- `POST /api/grievances/:id/assign` – Assign field officer (`department_head`, `admin`)
+- `POST /api/grievances/:id/resolve` – Submit resolution with photo proof (`officer`, `admin`)
+- `POST /api/grievances/:id/verify` – Verify citizen satisfaction or reopen case (`citizen`, `admin`)
+- `POST /api/grievances/:id/reopen` – Direct citizen reopen endpoint (`citizen`, `admin`)
+
+### Analytics & GIS (`/api/analytics`)
+- `GET /api/analytics/dashboard` – Role-scoped KPI metrics and accurate SLA compliance rate
+- `GET /api/analytics/map` – GeoJSON-compatible ward grievance coordinates for Leaflet GIS map
+- `GET /api/analytics/audit-logs` – Tamper-evident civic action log (`admin`, `department_head`)
+
+### Notifications (`/api/notifications`)
+- `GET /api/notifications` – Fetch notifications for authenticated user
+- `PATCH /api/notifications/:id/read` – Mark notification as read (enforces ownership)
+- `POST /api/notifications/mark-all-read` – Mark all user notifications as read
+
+---
+
+## 🧪 Testing
+
+The test suite uses Node.js's native `node:test` and `node:assert` runner (no extra dependencies required).
 
 ```bash
-# 1. Install all dependencies (root, backend, frontend)
-npm run install:all
+# Run unit tests
+npm test
+```
 
-# 2. Start both backend (port 5000) and frontend (port 5173) concurrently
+Test coverage includes:
+- Sequential lifecycle transitions (`SUBMITTED` $\rightarrow$ `ASSIGNED` $\rightarrow$ `IN_PROGRESS` $\rightarrow$ `AWAITING_VERIFICATION` $\rightarrow$ `CLOSED`)
+- Rejection of no-op transitions and illegal state skips
+- Role-based transition authorization guards (`isAssignee`, `isCreator`)
+- SLA deadline projection and overdue calculation for active & completed complaints
+- Automated batch SLA overdue detection
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js v18.0.0 or higher
+- npm v9.0.0 or higher
+
+### 1. Install Dependencies
+```bash
+npm run install:all
+```
+
+### 2. Configure Environment
+```bash
+# Backend configuration
+cp backend/.env.example backend/.env
+```
+
+### 3. Run Development Server
+```bash
 npm run dev
 ```
 
-- **Frontend URL**: [http://localhost:5173](http://localhost:5173)
+- **Frontend Client**: [http://localhost:5173](http://localhost:5173)
 - **Backend API**: [http://localhost:5000](http://localhost:5000)
+- **Healthcheck**: [http://localhost:5000/api/health](http://localhost:5000/api/health)
+
+---
+
+## ⚠️ Known Architectural Trade-offs & Prototype Scope
+
+1. **Storage Engine**: This prototype uses an atomic JSON datastore (`backend/db.js`) with temp-file writes and atomic renames to ensure a self-contained, zero-dependency setup without requiring an external PostgreSQL or MongoDB instance. All operations are isolated inside the `DatabaseStore` / `prisma.js` repository pattern, making migration to PostgreSQL with Prisma an isolated change to that single file.
+2. **Notification Dispatch**: Notifications are in-app and persisted in the local datastore. In a production deployment, this would be wired to an SMS gateway (e.g. Twilio) and SMTP mailer.
+3. **Session Storage**: JWT tokens are persisted in browser `localStorage` for frictionless client demo state management.

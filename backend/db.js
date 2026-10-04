@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import bcrypt from 'bcryptjs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -94,24 +95,58 @@ export const INITIAL_CATEGORIES = [
   },
 ];
 
+// Seed realistic bcrypt hash for 'password123'
+const DEFAULT_PASS_HASH = bcrypt.hashSync('password123', 10);
+
 export const INITIAL_USERS = [
+  // Citizens
   {
     id: 'user-citizen-1',
     name: 'Palak Rathod',
     email: 'palak.rathod@example.com',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9876543210',
     role: 'citizen',
     address: 'B-302, Gokul Horizon, Bhayandar West, Thane 401101',
     createdAt: new Date(Date.now() - 30 * 24 * 3600 * 1000).toISOString(),
   },
   {
+    id: 'user-citizen-2',
+    name: 'Aarav Mehta',
+    email: 'aarav.mehta@example.com',
+    password: DEFAULT_PASS_HASH,
+    phone: '9819001234',
+    role: 'citizen',
+    address: 'Flat 401, Silver Arch, Mira Road East, Thane 401107',
+    createdAt: new Date(Date.now() - 25 * 24 * 3600 * 1000).toISOString(),
+  },
+  {
+    id: 'user-citizen-3',
+    name: 'Sunita Joshi',
+    email: 'sunita.joshi@example.com',
+    password: DEFAULT_PASS_HASH,
+    phone: '9833004455',
+    role: 'citizen',
+    address: 'House 12, Sector 3, Bhayandar West, Thane 401101',
+    createdAt: new Date(Date.now() - 20 * 24 * 3600 * 1000).toISOString(),
+  },
+  {
+    id: 'user-citizen-4',
+    name: 'Kavita Nair',
+    email: 'kavita.nair@example.com',
+    password: DEFAULT_PASS_HASH,
+    phone: '9820556677',
+    role: 'citizen',
+    address: 'Temba Road, Near Municipal School, Bhayandar West 401101',
+    createdAt: new Date(Date.now() - 15 * 24 * 3600 * 1000).toISOString(),
+  },
+
+  // Field Officers
+  {
     id: 'user-officer-roads',
     name: 'Rahul Sharma',
     email: 'rahul.sharma@pwd.gov.in',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9820011223',
     role: 'officer',
     departmentId: 'dept-roads',
@@ -123,8 +158,7 @@ export const INITIAL_USERS = [
     id: 'user-officer-sanitation',
     name: 'Amit Vernekar',
     email: 'amit.vernekar@sanitation.gov.in',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9820044556',
     role: 'officer',
     departmentId: 'dept-sanitation',
@@ -136,8 +170,7 @@ export const INITIAL_USERS = [
     id: 'user-officer-water',
     name: 'Suresh More',
     email: 'suresh.more@water.gov.in',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9820077889',
     role: 'officer',
     departmentId: 'dept-water',
@@ -149,8 +182,7 @@ export const INITIAL_USERS = [
     id: 'user-officer-elec',
     name: 'Vinay Nair',
     email: 'vinay.nair@electrical.gov.in',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9820099887',
     role: 'officer',
     departmentId: 'dept-electrical',
@@ -158,12 +190,25 @@ export const INITIAL_USERS = [
     designation: 'Electrical Maintenance In-Charge',
     createdAt: new Date(Date.now() - 60 * 24 * 3600 * 1000).toISOString(),
   },
+
+  // Department Heads
+  {
+    id: 'user-head-roads',
+    name: 'Ramesh Kulkarni',
+    email: 'pwd@jansewa.gov.in',
+    password: DEFAULT_PASS_HASH,
+    phone: '022-28190011',
+    role: 'department_head',
+    departmentId: 'dept-roads',
+    departmentName: 'Roads & Infrastructure',
+    designation: 'Executive Engineer (Roads)',
+    createdAt: new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString(),
+  },
   {
     id: 'user-head-sanitation',
     name: 'Sneha Iyer',
     email: 'sneha.iyer@sanitation.gov.in',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9811122233',
     role: 'department_head',
     departmentId: 'dept-sanitation',
@@ -172,11 +217,36 @@ export const INITIAL_USERS = [
     createdAt: new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString(),
   },
   {
+    id: 'user-head-water',
+    name: 'Vikas Patil',
+    email: 'water@jansewa.gov.in',
+    password: DEFAULT_PASS_HASH,
+    phone: '022-28190033',
+    role: 'department_head',
+    departmentId: 'dept-water',
+    departmentName: 'Water Supply & Sewage',
+    designation: 'Executive Engineer (Water Works)',
+    createdAt: new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString(),
+  },
+  {
+    id: 'user-head-electrical',
+    name: 'Pooja Deshmukh',
+    email: 'electrical@jansewa.gov.in',
+    password: DEFAULT_PASS_HASH,
+    phone: '022-28190044',
+    role: 'department_head',
+    departmentId: 'dept-electrical',
+    departmentName: 'Street Lighting & Electricity',
+    designation: 'Chief Electrical Inspector',
+    createdAt: new Date(Date.now() - 90 * 24 * 3600 * 1000).toISOString(),
+  },
+
+  // Chief Admin
+  {
     id: 'user-admin-1',
     name: 'Admin Officer',
     email: 'admin@jansewa.gov.in',
-    password: '$2a$10$YourHashedPasswordPlaceholderOrPass123',
-    rawPassword: 'password123',
+    password: DEFAULT_PASS_HASH,
     phone: '9988776655',
     role: 'admin',
     designation: 'Public Grievance Redressal Commissioner',
@@ -186,7 +256,6 @@ export const INITIAL_USERS = [
 
 const now = Date.now();
 const h = 3600 * 1000;
-const d = 24 * h;
 
 export const INITIAL_GRIEVANCES = [
   {
@@ -302,17 +371,13 @@ export const INITIAL_GRIEVANCES = [
     adminRemark: 'Compact dumper cleared bin and washed periphery with disinfectant.',
     evidence: [],
     resolution: {
-      description: 'Heavy hydraulic compactor truck cleared 2.4 tons of refuse. Bin disinfected with sodium hypochlorite spray. Daily 6 AM collection scheduled.',
-      proofFiles: [
-        {
-          id: 'proof-1',
-          url: 'https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80',
-          name: 'sanitation_cleared_site.jpg',
-        },
-      ],
-      submittedBy: 'user-officer-sanitation',
-      submittedByName: 'Amit Vernekar',
-      submittedAt: new Date(now - 2 * h).toISOString(),
+      summary: 'Heavy hydraulic compactor truck cleared 2.4 tons of refuse. Bin disinfected with sodium hypochlorite spray. Daily 6 AM collection scheduled.',
+      text: 'Heavy hydraulic compactor truck cleared 2.4 tons of refuse. Bin disinfected with sodium hypochlorite spray. Daily 6 AM collection scheduled.',
+      proofFiles: ['https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80'],
+      proofUrls: ['https://images.unsplash.com/photo-1532996122724-e3c354a0b15b?auto=format&fit=crop&w=600&q=80'],
+      resolvedBy: 'Amit Vernekar',
+      resolvedById: 'user-officer-sanitation',
+      resolvedAt: new Date(now - 2 * h).toISOString(),
     },
     verification: null,
     feedback: null,
@@ -384,9 +449,9 @@ export const INITIAL_GRIEVANCES = [
     assignedOfficerId: null,
     assignedOfficerName: null,
     assignedAt: null,
-    slaHours: 48,
+    slaHours: 24,
     slaStartedAt: new Date(now - 6 * h).toISOString(),
-    slaDeadline: new Date(now + 42 * h).toISOString(),
+    slaDeadline: new Date(now + 18 * h).toISOString(),
     isOverdue: false,
     isEscalated: false,
     adminRemark: '',
@@ -435,9 +500,9 @@ export const INITIAL_GRIEVANCES = [
     assignedOfficerId: 'user-officer-water',
     assignedOfficerName: 'Suresh More',
     assignedAt: new Date(now - 28 * h).toISOString(),
-    slaHours: 72,
+    slaHours: 48,
     slaStartedAt: new Date(now - 32 * h).toISOString(),
-    slaDeadline: new Date(now + 40 * h).toISOString(),
+    slaDeadline: new Date(now + 16 * h).toISOString(),
     isOverdue: false,
     isEscalated: false,
     adminRemark: 'Excavation team isolating section valve to install repair sleeve',
@@ -514,8 +579,10 @@ export const INITIAL_GRIEVANCES = [
     evidence: [],
     resolution: null,
     verification: {
-      verified: false,
+      verifiedBy: 'Palak Rathod',
       verifiedAt: new Date(now - 12 * h).toISOString(),
+      satisfied: false,
+      reopenReason: 'Issue not resolved. The water has backed up again.',
       citizenRemarks: 'Issue not resolved. The water has backed up again.',
     },
     feedback: null,
@@ -586,15 +653,20 @@ export const INITIAL_GRIEVANCES = [
     adminRemark: 'Paver blocks re-laid with fresh cement mortar bedding.',
     evidence: [],
     resolution: {
-      description: 'Footpath section re-leveled with 120 interlocking paver blocks and cured for 48 hours.',
-      proofFiles: [],
-      submittedBy: 'user-officer-roads',
-      submittedByName: 'Rahul Sharma',
-      submittedAt: new Date(now - 48 * h).toISOString(),
+      summary: 'Footpath section re-leveled with 120 interlocking paver blocks and cured for 48 hours.',
+      text: 'Footpath section re-leveled with 120 interlocking paver blocks and cured for 48 hours.',
+      proofFiles: ['https://images.unsplash.com/photo-1584463699039-506048d08ca6?auto=format&fit=crop&w=600&q=80'],
+      proofUrls: ['https://images.unsplash.com/photo-1584463699039-506048d08ca6?auto=format&fit=crop&w=600&q=80'],
+      resolvedBy: 'Rahul Sharma',
+      resolvedById: 'user-officer-roads',
+      resolvedAt: new Date(now - 48 * h).toISOString(),
     },
     verification: {
-      verified: true,
+      verifiedBy: 'Kavita Nair',
       verifiedAt: new Date(now - 24 * h).toISOString(),
+      satisfied: true,
+      rating: 5,
+      feedback: 'Prompt response within 3 days. Excellent workmanship by team.',
       citizenRemarks: 'Thank you! The footpath is completely level and safe now.',
     },
     feedback: {
@@ -655,6 +727,8 @@ export const INITIAL_NOTIFICATIONS = [
     title: 'Resolution Verification Required',
     message: 'Officer Amit Vernekar has submitted a resolution for GRV-2026-00118. Please inspect and confirm.',
     link: '/citizen/grievance/grv-2',
+    type: 'success',
+    grievanceId: 'grv-2',
     isRead: false,
     createdAt: new Date(now - 2 * h).toISOString(),
   },
@@ -664,6 +738,8 @@ export const INITIAL_NOTIFICATIONS = [
     title: 'New Priority Case Assigned',
     message: 'You have been assigned GRV-2026-00125 (Streetlight Outage - Bhayandar West). SLA: 28h remaining.',
     link: '/officer/grievance/grv-1',
+    type: 'warning',
+    grievanceId: 'grv-1',
     isRead: false,
     createdAt: new Date(now - 14 * h).toISOString(),
   },
@@ -673,6 +749,8 @@ export const INITIAL_NOTIFICATIONS = [
     title: 'Case Reopened & Escalated',
     message: 'GRV-2026-00085 was reopened by citizen Palak Rathod. Immediate field intervention required.',
     link: '/department/grievance/grv-5',
+    type: 'error',
+    grievanceId: 'grv-5',
     isRead: false,
     createdAt: new Date(now - 12 * h).toISOString(),
   },
@@ -685,6 +763,7 @@ export const INITIAL_AUDIT_LOGS = [
     complaintId: 'GRV-2026-00118',
     action: 'RESOLUTION_SUBMITTED',
     description: 'Officer Amit Vernekar uploaded completion report with photographic evidence',
+    details: 'Officer Amit Vernekar uploaded completion report with photographic evidence',
     performedBy: 'Amit Vernekar',
     performedByRole: 'officer',
     previousStatus: 'IN_PROGRESS',
@@ -697,6 +776,7 @@ export const INITIAL_AUDIT_LOGS = [
     complaintId: 'GRV-2026-00085',
     action: 'REOPENED',
     description: 'Citizen rejected resolution: blockage recurring. Flagged as escalated.',
+    details: 'Citizen rejected resolution: blockage recurring. Flagged as escalated.',
     performedBy: 'Palak Rathod',
     performedByRole: 'citizen',
     previousStatus: 'RESOLUTION_SUBMITTED',
@@ -704,6 +784,17 @@ export const INITIAL_AUDIT_LOGS = [
     timestamp: new Date(now - 12 * h).toISOString(),
   },
 ];
+
+function cloneInitialData() {
+  return {
+    departments: JSON.parse(JSON.stringify(INITIAL_DEPARTMENTS)),
+    categories: JSON.parse(JSON.stringify(INITIAL_CATEGORIES)),
+    users: JSON.parse(JSON.stringify(INITIAL_USERS)),
+    grievances: JSON.parse(JSON.stringify(INITIAL_GRIEVANCES)),
+    notifications: JSON.parse(JSON.stringify(INITIAL_NOTIFICATIONS)),
+    auditLogs: JSON.parse(JSON.stringify(INITIAL_AUDIT_LOGS)),
+  };
+}
 
 class DatabaseStore {
   constructor() {
@@ -714,29 +805,34 @@ class DatabaseStore {
     try {
       if (fs.existsSync(DB_FILE)) {
         const raw = fs.readFileSync(DB_FILE, 'utf8');
-        return JSON.parse(raw);
+        const parsed = JSON.parse(raw);
+        // Sanity check parsed structure
+        if (parsed && Array.isArray(parsed.users) && Array.isArray(parsed.grievances)) {
+          return parsed;
+        }
       }
     } catch (e) {
-      console.warn('Failed reading db.json, re-initializing seed data:', e.message);
+      console.warn('Failed reading db.json, re-initializing fresh seed data:', e.message);
     }
-    const initial = {
-      departments: INITIAL_DEPARTMENTS,
-      categories: INITIAL_CATEGORIES,
-      users: INITIAL_USERS,
-      grievances: INITIAL_GRIEVANCES,
-      notifications: INITIAL_NOTIFICATIONS,
-      auditLogs: INITIAL_AUDIT_LOGS,
-    };
+    const initial = cloneInitialData();
     this.save(initial);
     return initial;
   }
 
+  /**
+   * Atomic file save using temp file + atomic rename
+   */
   save(data = this.data) {
+    const tempFile = `${DB_FILE}.${Date.now()}.${Math.floor(Math.random() * 1000)}.tmp`;
     try {
-      fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf8');
+      fs.writeFileSync(tempFile, JSON.stringify(data, null, 2), 'utf8');
+      fs.renameSync(tempFile, DB_FILE);
       this.data = data;
     } catch (e) {
       console.error('Failed writing db.json:', e);
+      try {
+        if (fs.existsSync(tempFile)) fs.unlinkSync(tempFile);
+      } catch (_) {}
     }
   }
 
@@ -794,20 +890,15 @@ class DatabaseStore {
     this.data.auditLogs.unshift({
       id: `audit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       timestamp: new Date().toISOString(),
+      description: entry.details || entry.description,
+      details: entry.details || entry.description,
       ...entry,
     });
     this.save();
   }
 
   reset() {
-    const initial = {
-      departments: INITIAL_DEPARTMENTS,
-      categories: INITIAL_CATEGORIES,
-      users: INITIAL_USERS,
-      grievances: INITIAL_GRIEVANCES,
-      notifications: INITIAL_NOTIFICATIONS,
-      auditLogs: INITIAL_AUDIT_LOGS,
-    };
+    const initial = cloneInitialData();
     this.save(initial);
     return initial;
   }

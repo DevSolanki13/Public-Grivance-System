@@ -1,38 +1,29 @@
 import bcrypt from 'bcryptjs';
 import { db } from '../db.js';
 import { createToken } from '../utils/token.js';
+import { HttpError } from '../middleware/errorHandler.js';
 
 export class AuthService {
   static login(email, password, requestedRole) {
     if (!email || !password) {
-      const err = new Error('Email and password are required.');
-      err.status = 400;
-      throw err;
+      throw new HttpError(400, 'Email and password are required.');
     }
 
     const cleanEmail = email.trim().toLowerCase();
     const user = db.getUsers().find((u) => u.email.toLowerCase() === cleanEmail);
 
     if (!user) {
-      const err = new Error('Invalid email or password.');
-      err.status = 401;
-      throw err;
+      throw new HttpError(401, 'Invalid email or password.');
     }
 
     if (requestedRole && user.role !== requestedRole && user.role !== 'admin') {
-      const err = new Error(`Account found, but role is '${user.role}', not '${requestedRole}'. Please switch role selector.`);
-      err.status = 401;
-      throw err;
+      throw new HttpError(401, `Account found, but role is '${user.role}', not '${requestedRole}'.`);
     }
 
-    const passwordMatch =
-      password === user.rawPassword ||
-      (user.password && bcrypt.compareSync(password, user.password));
-
+    // Verify bcrypt password hash only
+    const passwordMatch = user.password && bcrypt.compareSync(password, user.password);
     if (!passwordMatch) {
-      const err = new Error('Invalid email or password.');
-      err.status = 401;
-      throw err;
+      throw new HttpError(401, 'Invalid email or password.');
     }
 
     const token = createToken(user);
@@ -42,6 +33,10 @@ export class AuthService {
   }
 
   static switchRole(targetRole) {
+    if (process.env.NODE_ENV === 'production') {
+      throw new HttpError(403, 'Role switching is disabled in production environment.');
+    }
+
     const roleUsers = {
       citizen: 'user-citizen-1',
       officer: 'user-officer-elec',
@@ -57,9 +52,7 @@ export class AuthService {
     }
 
     if (!user) {
-      const err = new Error(`No mock account found for role: ${targetRole}`);
-      err.status = 404;
-      throw err;
+      throw new HttpError(404, `No demo account configured for role: ${targetRole}`);
     }
 
     const token = createToken(user);
@@ -71,9 +64,7 @@ export class AuthService {
   static getProfile(userId) {
     const user = db.getUsers().find((u) => u.id === userId);
     if (!user) {
-      const err = new Error('User not found.');
-      err.status = 404;
-      throw err;
+      throw new HttpError(404, 'User not found.');
     }
     const { password: _, rawPassword: __, ...userProfile } = user;
     return userProfile;
@@ -81,28 +72,33 @@ export class AuthService {
 
   static register(data) {
     const { name, email, phone, password, address } = data;
-    if (!name || !email || !password) {
-      const err = new Error('Name, email, and password are required.');
-      err.status = 400;
-      throw err;
+
+    if (!name || name.trim().length < 2) {
+      throw new HttpError(400, 'Full name is required (minimum 2 characters).');
     }
 
-    const existing = db.getUsers().find((u) => u.email.toLowerCase() === email.trim().toLowerCase());
+    if (!email || !/^\S+@\S+\.\S+$/.test(email.trim())) {
+      throw new HttpError(400, 'Please provide a valid email address.');
+    }
+
+    if (!password || password.length < 8) {
+      throw new HttpError(400, 'Password must be at least 8 characters long.');
+    }
+
+    const cleanEmail = email.trim().toLowerCase();
+    const existing = db.getUsers().find((u) => u.email.toLowerCase() === cleanEmail);
     if (existing) {
-      const err = new Error('An account with this email address already exists.');
-      err.status = 409;
-      throw err;
+      throw new HttpError(409, 'An account with this email address already exists.');
     }
 
     const newUser = {
       id: `user-citizen-${Date.now()}`,
       name: name.trim(),
-      email: email.trim().toLowerCase(),
-      phone: phone || '',
+      email: cleanEmail,
+      phone: (phone || '').trim(),
       password: bcrypt.hashSync(password, 10),
-      rawPassword: password,
       role: 'citizen',
-      address: address || '',
+      address: (address || '').trim(),
       createdAt: new Date().toISOString(),
     };
 

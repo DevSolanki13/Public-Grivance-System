@@ -26,9 +26,11 @@ export default function OfficerDashboard() {
   const [loading, setLoading] = useState(true);
   const [activeResolveGrievance, setActiveResolveGrievance] = useState(null);
   const [actionLoading, setActionLoading] = useState(null);
+  const [error, setError] = useState('');
 
   const loadData = async () => {
     setLoading(true);
+    setError('');
     try {
       const res = await api.getGrievances();
       if (res.success) {
@@ -36,6 +38,7 @@ export default function OfficerDashboard() {
       }
     } catch (err) {
       console.warn('Failed loading officer cases:', err);
+      setError('Could not load assigned cases.');
     } finally {
       setLoading(false);
     }
@@ -47,13 +50,14 @@ export default function OfficerDashboard() {
 
   const handleStartWork = async (id) => {
     setActionLoading(id);
+    setError('');
     try {
       const res = await api.startWork(id, { remark: 'Officer accepted case and deployed team.' });
       if (res.success) {
         await loadData();
       }
     } catch (err) {
-      alert(err.message || 'Failed to start work.');
+      setError(err.message || 'Failed to start work.');
     } finally {
       setActionLoading(null);
     }
@@ -87,6 +91,13 @@ export default function OfficerDashboard() {
       title={`Officer Workspace: ${user?.name || 'Engineer'}`}
       subtitle={`${user?.designation || 'Field Officer'} • ${user?.departmentName || 'Public Works'}`}
     >
+      {error && (
+        <div style={{ background: '#fef2f2', border: '1px solid #fecaca', color: '#991b1b', padding: '10px 16px', borderRadius: 8, marginBottom: 16, fontSize: 13, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+          <span>{error}</span>
+          <button type="button" onClick={() => setError('')} style={{ background: 'none', border: 'none', cursor: 'pointer', color: '#991b1b', fontWeight: 700, fontSize: 16 }}>×</button>
+        </div>
+      )}
+
       {/* Officer Daily KPI Cards */}
       <div className="stats-grid">
         <StatCard
