@@ -15,11 +15,13 @@ export default function DepartmentDashboard() {
   const [grievances, setGrievances] = useState([]);
   const [officers, setOfficers] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [activeAssignGrievance, setActiveAssignGrievance] = useState(null);
   const [selectedDeptId, setSelectedDeptId] = useState('All');
 
   const loadData = async () => {
     setLoading(true);
+    setError('');
     try {
       const params = selectedDeptId !== 'All' ? { departmentId: selectedDeptId } : {};
       const [gRes, oRes] = await Promise.all([
@@ -30,6 +32,7 @@ export default function DepartmentDashboard() {
       if (oRes.success) setOfficers(oRes.officers || []);
     } catch (err) {
       console.warn('Dept dashboard load error:', err);
+      setError('Unable to load department cases. Please refresh or try again.');
     } finally {
       setLoading(false);
     }
@@ -56,6 +59,7 @@ export default function DepartmentDashboard() {
         </Link>
       }
     >
+      {error && <p className="error-msg">{error}</p>}
       <div className="stats-grid">
         <StatCard
           icon={Building2}

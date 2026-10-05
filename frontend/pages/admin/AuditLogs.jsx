@@ -7,9 +7,12 @@ import { ShieldCheck, ArrowLeft, History } from 'lucide-react';
 export default function AuditLogs() {
   const [logs, setLogs] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
 
   useEffect(() => {
     async function loadLogs() {
+      setLoading(true);
+      setError('');
       try {
         const res = await api.getAuditLogs();
         if (res.success) {
@@ -17,6 +20,7 @@ export default function AuditLogs() {
         }
       } catch (err) {
         console.warn('Failed to load audit logs:', err);
+        setError('Unable to load audit logs. Please verify credentials or connection.');
       } finally {
         setLoading(false);
       }
@@ -27,13 +31,14 @@ export default function AuditLogs() {
   return (
     <PageLayout
       title="System Audit Trail & Accountability Logs"
-      subtitle="Immutable event logs recording every status change, assignment, reopen, and citizen verification"
+      subtitle="Chronological event logs recording every status change, assignment, reopen, and citizen verification"
       action={
         <Link to="/admin/dashboard" className="btn btn-outline" style={{ background: 'rgba(255,255,255,0.15)', color: 'white', borderColor: 'rgba(255,255,255,0.4)', fontSize: 13 }}>
           <ArrowLeft size={14} /> Back to Dashboard
         </Link>
       }
     >
+      {error && <p className="error-msg">{error}</p>}
       <div className="card">
         {loading ? (
           <p style={{ color: '#94a3b8', padding: '20px' }}>Loading audit logs...</p>

@@ -21,13 +21,14 @@ export default function Login() {
     setLoading(true);
     setError('');
     try {
-      const user = await login(email, password, role);
+      // Authenticate by credentials only; route by real user role regardless of tab
+      const user = await login(email, password);
       if (user.role === 'admin') navigate('/admin/dashboard');
       else if (user.role === 'department_head') navigate('/department/dashboard');
       else if (user.role === 'officer') navigate('/officer/dashboard');
       else navigate('/citizen/dashboard');
     } catch (err) {
-      setError(err.message || 'Login failed. Please check credentials or use Quick Test below.');
+      setError(err.message || 'Invalid email or password.');
     } finally {
       setLoading(false);
     }

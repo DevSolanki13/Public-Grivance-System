@@ -14,6 +14,7 @@ export default function ComplaintMap() {
   const [selectedMarker, setSelectedMarker] = useState(null);
   const [filterPriority, setFilterPriority] = useState('ALL');
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const mapContainerRef = useRef(null);
   const mapInstanceRef = useRef(null);
   const markersLayerRef = useRef(null);
@@ -21,6 +22,8 @@ export default function ComplaintMap() {
   // Load map data
   useEffect(() => {
     async function loadMapData() {
+      setLoading(true);
+      setError('');
       try {
         const res = await api.getMapMarkers();
         if (res.success) {
@@ -32,6 +35,7 @@ export default function ComplaintMap() {
         }
       } catch (err) {
         console.warn('Map load error:', err);
+        setError('Unable to load GIS complaint coordinates. Please verify API connection.');
       } finally {
         setLoading(false);
       }
@@ -185,6 +189,7 @@ export default function ComplaintMap() {
         </Link>
       }
     >
+      {error && <p className="error-msg">{error}</p>}
       {/* Priority Legend & Filter Bar */}
       <div className="card" style={{ padding: '14px 20px', marginBottom: 20 }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>

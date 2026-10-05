@@ -16,11 +16,7 @@ export class AuthService {
       throw new HttpError(401, 'Invalid email or password.');
     }
 
-    if (requestedRole && user.role !== requestedRole && user.role !== 'admin') {
-      throw new HttpError(401, `Account found, but role is '${user.role}', not '${requestedRole}'.`);
-    }
-
-    // Verify bcrypt password hash only
+    // Verify bcrypt password hash only (generic error to prevent account enumeration)
     const passwordMatch = user.password && bcrypt.compareSync(password, user.password);
     if (!passwordMatch) {
       throw new HttpError(401, 'Invalid email or password.');

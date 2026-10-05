@@ -2,7 +2,7 @@ import { Router } from 'express';
 import { GrievanceController } from '../controllers/grievanceController.js';
 import { authenticate } from '../middleware/authMiddleware.js';
 import { requireRole } from '../middleware/roleMiddleware.js';
-import { uploadEvidence, uploadProof } from '../middleware/uploadMiddleware.js';
+import { uploadEvidence, uploadProof, verifyUploadedImages } from '../middleware/uploadMiddleware.js';
 
 const router = Router();
 
@@ -20,6 +20,7 @@ router.post(
   '/',
   requireRole('citizen', 'admin'),
   uploadEvidence,
+  verifyUploadedImages,
   GrievanceController.create
 );
 
@@ -38,6 +39,7 @@ router.post(
   '/:id/resolve',
   requireRole('admin', 'officer'),
   uploadProof,
+  verifyUploadedImages,
   GrievanceController.resolveWithProof
 );
 

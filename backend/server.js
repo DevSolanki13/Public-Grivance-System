@@ -140,7 +140,7 @@ const server = app.listen(PORT, () => {
   console.log(`📡 URL: http://localhost:${PORT}`);
   console.log(`🛡️  CORS Origin: ${CORS_ORIGIN}`);
   console.log(`📁 Uploads Dir: ${UPLOADS_DIR}`);
-  console.log(`🐘 Database: ${isPrismaConfigured ? 'Supabase PostgreSQL (Active via Prisma)' : 'Embedded JSON Store (Add Supabase password to DATABASE_URL to activate)'}`);
+  console.log(`🐘 Database: Embedded JSON store`);
   console.log(`======================================================\n`);
 });
 

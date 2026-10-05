@@ -1,6 +1,6 @@
 # 🏛️ JanSewa – Public Grievance Redressal & Civic SLA Monitoring Platform
 
-A production-grade, fullstack civic governance system engineered for Indian municipal corporations (modeled after civic bodies like BMC / MBMC). JanSewa streamlines citizen complaint registration, enforces strict time-bound Service Level Agreements (SLAs), requires photographic resolution proof from field officers, empowers citizens with a verification/reopen accountability loop, and provides municipal leadership with an interactive GIS heatmap and tamper-evident audit logs.
+A prototype fullstack civic governance system engineered for Indian municipal corporations (modeled after civic bodies like BMC / MBMC). JanSewa streamlines citizen complaint registration, enforces strict time-bound Service Level Agreements (SLAs), requires photographic resolution proof from field officers, empowers citizens with a verification/reopen accountability loop, and provides municipal leadership with an interactive GIS heatmap and structured civic audit logs.
 
 ---
 
@@ -30,7 +30,7 @@ A production-grade, fullstack civic governance system engineered for Indian muni
 ### 🏛️ 4. Chief Administrator & Leadership
 - **City-Wide KPI Dashboard**: Real-time tracking of Total Grievances, In-Progress Work, Awaiting Verification, Overdue Cases, Escalated Cases, and True SLA Compliance %.
 - **Interactive GIS Heatmap & Ward Map**: Built with Leaflet OpenStreetMap to visualize civic problem hotspots across municipal wards, color-coded by priority and urgency.
-- **Tamper-Evident Civic Audit Logs**: Immutable historical event stream logging actor, role, action, previous status, new status, and timestamp.
+- **Civic Audit Logs**: Historical event stream logging actor, role, action, previous status, new status, and timestamp in structured JSON format.
 - **Controlled Demo Reset**: Administrative utility to reset seed data to default realistic municipal records (strictly disabled in production).
 
 ### 🌐 5. Public Transparency & Docket Tracking
@@ -72,7 +72,7 @@ graph TD
 
 ## 🏛️ State Machine & Lifecycle Transitions
 
-All state transitions are strictly governed by [backend/services/stateMachine.js](file:///c:/Users/DEV/Documents/Coding/SE%20Project/JanSewa-Complete/backend/services/stateMachine.js). Direct status bypasses and no-op updates are strictly rejected.
+All state transitions are strictly governed by [backend/services/stateMachine.js](backend/services/stateMachine.js). Direct status bypasses and no-op updates are strictly rejected.
 
 ```mermaid
 stateDiagram-v2
@@ -172,7 +172,6 @@ JanSewa-Complete/
 │   │   ├── department/        # DepartmentDashboard, OfficerWorkload
 │   │   ├── officer/           # OfficerDashboard
 │   │   └── public/            # Home, Transparency, TrackPublic
-│   ├── utils/                 # Client formatters and helpers
 │   ├── App.jsx                # Main app router with lazy loading & RBAC protection
 │   ├── main.jsx               # React 19 entry point
 │   ├── index.css              # Custom municipal civic design system
@@ -201,7 +200,7 @@ JanSewa-Complete/
 
 ---
 
-## 👥 Demo Personas & Test Credentials
+## 👥 Demo Personas & Test Credentials (Local Demo Only)
 
 All seed accounts share the default password: **`password123`**
 
@@ -250,7 +249,7 @@ All seed accounts share the default password: **`password123`**
 |---|---|---|---|
 | `GET` | `/api/analytics/dashboard` | Public / Scoped | Role-scoped KPI metrics and true SLA compliance rate |
 | `GET` | `/api/analytics/map` | Public / Scoped | GeoJSON-compatible ward markers for Leaflet GIS map |
-| `GET` | `/api/analytics/audit-logs` | `admin`, `dept_head` | Tamper-evident civic action audit trail |
+| `GET` | `/api/analytics/audit-logs` | `admin`, `dept_head` | Civic action audit trail |
 
 ### Notifications (`/api/notifications`)
 | Method | Endpoint | Access | Description |
@@ -297,21 +296,18 @@ npm install
 ```
 
 ### 3. Environment Configuration
-The backend comes pre-configured with development defaults. To customize:
+The backend comes pre-configured with development defaults and starts out of the box in development without requiring any `.env` file. To customize:
 ```bash
 cp backend/.env.example backend/.env
 ```
 
-Default configuration in `backend/.env`:
-```env
-PORT=5000
-NODE_ENV=development
-JWT_SECRET=jansewa_dev_secret_key_random_long_secure_token_2026_x89f
-CORS_ORIGIN=http://localhost:5173
+### 4. Run the Live Demo (Recommended)
+To reset the seed database to a fresh realistic municipal state and launch both backend and frontend servers concurrently:
+```bash
+npm run demo
 ```
 
-### 4. Run the Development Server
-Start both Backend and Frontend concurrently with a single command:
+Or start the servers without resetting existing database data:
 ```bash
 npm run dev
 ```
@@ -330,8 +326,8 @@ Vite compiles and chunks the frontend into optimized static assets in `frontend/
 
 ## 🎓 Evaluator & Oral Defense FAQ
 
-### Q1: Why use an atomic JSON datastore instead of MongoDB or PostgreSQL?
-> **Answer**: For an academic/prototype submission, self-contained portability is critical: evaluators can clone and run the application instantly without configuring a local PostgreSQL or MongoDB instance. The architecture adheres to the **Repository Pattern** through `prisma.js` and `db.js`. All database operations are cleanly encapsulated in static service layers, meaning migrating to PostgreSQL with Prisma requires changing only the data adapter in `db.js`, without altering any controller, route, or UI code.
+### Q1: Why use an embedded JSON datastore instead of PostgreSQL?
+> **Answer**: For an academic viva and local live demonstration, zero-dependency portability is critical: evaluators can clone and run the application instantly without configuring a local PostgreSQL instance or external cloud database. The system currently runs on an **Embedded JSON store** (`backend/db.js`). Prisma and Supabase schemas in `backend/prisma/` are **prepared, not active** (set up as a foundation for production migration without altering controller or frontend code).
 
 ### Q2: How is Insecure Direct Object Reference (IDOR) prevented?
 > **Answer**: Every controller passes `req.user` into the service layer. The service layer invokes `assertCanView(user, grievance)`, which inspects ownership:

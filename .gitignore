@@ -34,3 +34,8 @@ backend/uploads/*
 !backend/uploads/.gitkeep
 !backend/data/.gitkeep
 
+# Test artifacts
+test-results/
+playwright-report/
+
+

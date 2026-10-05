@@ -1,3 +1,4 @@
+import { randomUUID } from 'node:crypto';
 import { db } from '../db.js';
 import { calculateSLADeadline, computeSLAStatus } from './slaService.js';
 import { canRoleTransition, isValidTransition } from './stateMachine.js';
@@ -5,6 +6,8 @@ import { NotificationService } from './notificationService.js';
 import { generateComplaintId } from '../utils/helpers.js';
 import { DEFAULT_SLA_HOURS, PRIORITIES } from '../constants/index.js';
 import { HttpError } from '../middleware/errorHandler.js';
+
+const generateTimelineId = () => `tl-${Date.now()}-${randomUUID().slice(0, 8)}`;
 
 export class GrievanceService {
   /**
@@ -211,9 +214,35 @@ export class GrievanceService {
       throw new HttpError(400, 'Description is required and must be between 10 and 2000 characters.');
     }
 
-    // Validate priority
-    const cleanPriority = String(priority).toUpperCase();
-    const validPriority = PRIORITIES.includes(cleanPriority) ? cleanPriority : 'MEDIUM';
+    // Validate priority (must return 400 for invalid values instead of silently falling back)
+    let validPriority = 'MEDIUM';
+    if (priority !== undefined && priority !== null && String(priority).trim() !== '') {
+      const cleanPriority = String(priority).trim().toUpperCase();
+      if (!PRIORITIES.includes(cleanPriority)) {
+        throw new HttpError(400, `Invalid priority '${priority}'. Allowed priorities are: ${PRIORITIES.join(', ')}.`);
+      }
+      validPriority = cleanPriority;
+    }
+
+    // Validate latitude (-90..90) and longitude (-180..180)
+    let finalLat = 19.3012;
+    let finalLng = 72.8519;
+
+    if (latitude !== undefined && latitude !== null && String(latitude).trim() !== '') {
+      const latVal = Number(latitude);
+      if (Number.isNaN(latVal) || latVal < -90 || latVal > 90) {
+        throw new HttpError(400, 'Latitude must be a valid number between -90 and 90.');
+      }
+      finalLat = latVal;
+    }
+
+    if (longitude !== undefined && longitude !== null && String(longitude).trim() !== '') {
+      const lngVal = Number(longitude);
+      if (Number.isNaN(lngVal) || lngVal < -180 || lngVal > 180) {
+        throw new HttpError(400, 'Longitude must be a valid number between -180 and 180.');
+      }
+      finalLng = lngVal;
+    }
 
     // Accept a category id (preferred) or its exact name; anything else is rejected.
     const cleanCat = String(categoryId || '').trim().toLowerCase();
@@ -237,9 +266,6 @@ export class GrievanceService {
     const complaintId = generateComplaintId(db.getGrievances());
     const evidenceUrls = (files || []).map((f) => `/uploads/${f.filename}`);
 
-    const latVal = parseFloat(latitude);
-    const lngVal = parseFloat(longitude);
-
     const newGrievance = {
       id: `grv-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       complaintId,
@@ -257,8 +283,8 @@ export class GrievanceService {
         address: (address || 'Not specified').trim(),
         area: (area || 'Ward Central').trim(),
         pincode: (pincode || '401101').trim(),
-        latitude: !isNaN(latVal) ? latVal : 19.3012,
-        longitude: !isNaN(lngVal) ? lngVal : 72.8519,
+        latitude: finalLat,
+        longitude: finalLng,
       },
       priority: validPriority,
       status: 'SUBMITTED',
@@ -281,7 +307,7 @@ export class GrievanceService {
       updatedAt: new Date().toISOString(),
       timeline: [
         {
-          id: `tl-${Date.now()}-1`,
+          id: generateTimelineId(),
           status: 'SUBMITTED',
           title: 'Grievance Registered',
           description: `Grievance registered with ${validPriority} priority. SLA Target: ${slaHours} Hours.`,
@@ -331,6 +357,22 @@ export class GrievanceService {
 
   static updateStatus(id, newStatus, remark, user) {
     const g = this.findOrThrow(id);
+    this.assertCanView(user, g);
+
+    // Block transitions that must use dedicated workflow endpoints
+    const blockedStatuses = [
+      'ASSIGNED',
+      'RESOLUTION_SUBMITTED',
+      'AWAITING_VERIFICATION',
+      'CLOSED',
+      'REOPENED',
+    ];
+    if (blockedStatuses.includes(newStatus)) {
+      throw new HttpError(
+        400,
+        `Cannot transition to '${newStatus}' via status endpoint. Use the dedicated workflow endpoints (/assign, /resolve, /verify).`
+      );
+    }
 
     if (g.status === newStatus) {
       throw new HttpError(400, `Grievance is already in status '${newStatus}'.`);
@@ -355,7 +397,7 @@ export class GrievanceService {
     };
 
     const timelineEntry = {
-      id: `tl-${Date.now()}`,
+      id: generateTimelineId(),
       status: newStatus,
       title: `Status Changed to ${newStatus.replace(/_/g, ' ')}`,
       description: remark || `Status updated from ${previousStatus} to ${newStatus}`,
@@ -395,6 +437,7 @@ export class GrievanceService {
 
   static assignOfficer(id, officerId, remark, user) {
     const g = this.findOrThrow(id);
+    this.assertCanView(user, g);
 
     // Department Head IDOR check: can only assign cases for their own department
     if (user.role === 'department_head' && user.departmentId !== g.departmentId) {
@@ -425,7 +468,7 @@ export class GrievanceService {
     };
 
     const timelineEntry = {
-      id: `tl-${Date.now()}`,
+      id: generateTimelineId(),
       status: 'ASSIGNED',
       title: 'Officer Assigned',
       description: `Task assigned to ${officer.name} (${officer.designation || 'Field Officer'}). ${remark || ''}`,
@@ -512,7 +555,7 @@ export class GrievanceService {
     };
 
     const timelineEntry = {
-      id: `tl-${Date.now()}`,
+      id: generateTimelineId(),
       status: 'AWAITING_VERIFICATION',
       title: 'Resolution Submitted - Verification Required',
       description: `Field officer ${user.name} submitted resolution proof. Awaiting citizen confirmation.`,
@@ -586,7 +629,7 @@ export class GrievanceService {
       };
 
       const timelineEntry = {
-        id: `tl-${Date.now()}`,
+        id: generateTimelineId(),
         status: 'CLOSED',
         title: 'Citizen Verified & Closed',
         description: `Citizen verified the work: Satisfied (Rating: ${numRating}/5). "${feedback || 'No comments'}"`,
@@ -654,7 +697,7 @@ export class GrievanceService {
       };
 
       const timelineEntry = {
-        id: `tl-${Date.now()}`,
+        id: generateTimelineId(),
         status: 'REOPENED',
         title: 'Resolution Rejected - Grievance Reopened',
         description: `Citizen rejected resolution: "${reasonText}". Case reopened and escalated.`,
