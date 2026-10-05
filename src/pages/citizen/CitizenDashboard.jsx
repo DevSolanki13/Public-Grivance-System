@@ -1,6 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ClipboardList, Eye, Wrench, Check, AlertTriangle, ArrowRight, History } from 'lucide-react';
+import {
+  ClipboardList,
+  Eye,
+  Wrench,
+  Check,
+  AlertTriangle,
+  ArrowRight,
+  History
+} from 'lucide-react';
 import PageLayout from '../../components/PageLayout';
 import StatCard from '../../components/StatCard';
 import StatusStepper from '../../components/StatusStepper';
@@ -56,7 +64,11 @@ function CitizenDashboard() {
       subtitle="Track your active civic requests. Closed and rejected cases are archived in History."
       action={
         <div style={{ display: 'flex', gap: '10px' }}>
-          <Link to="/citizen/my-grievances?tab=history" className="btn btn-outline" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+          <Link
+            to="/citizen/my-grievances?tab=history"
+            className="btn btn-outline"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+          >
             <History size={16} /> Grievance History ({historyGrievances.length})
           </Link>
           <Link to="/citizen/submit" className="btn btn-light">File a complaint</Link>
@@ -133,12 +145,17 @@ function CitizenDashboard() {
         <StatCard icon={Check} tone="resolved" value={show(pendingApproval.length)} label="Needs Verification" />
       </div>
 
+      {/* Active Requests List Section */}
       <div className="section-head" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <h2>My active requests</h2>
+        <h2>My active requests ({activeGrievances.length})</h2>
         <div style={{ display: 'flex', gap: '14px', alignItems: 'center' }}>
           <Link to="/citizen/my-grievances" className="link">View all active</Link>
           <span style={{ color: '#cbd5e1' }}>|</span>
-          <Link to="/citizen/my-grievances?tab=history" className="link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>
+          <Link
+            to="/citizen/my-grievances?tab=history"
+            className="link"
+            style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+          >
             <History size={14} /> History ({historyGrievances.length})
           </Link>
         </div>
@@ -147,7 +164,7 @@ function CitizenDashboard() {
       {loading ? (
         <div className="card"><p className="muted">Loading your grievances...</p></div>
       ) : activeGrievances.length === 0 ? (
-        <div className="card" style={{ padding: '30px 20px', textAlign: 'center' }}>
+        <div className="card" style={{ padding: '36px 20px', textAlign: 'center' }}>
           <p style={{ color: '#475569', fontSize: '15px', fontWeight: 600 }}>You have no pending active requests.</p>
           <p className="muted" style={{ fontSize: '13px', margin: '6px 0 16px' }}>
             All past complaints have either been resolved & closed or archived in history.
@@ -164,46 +181,60 @@ function CitizenDashboard() {
       ) : (
         activeGrievances.map((g) => {
           const needsVerification = Boolean(g.resolutionImageUrl) && g.status !== 'Closed';
+
           return (
             <div
               className="card active-card"
               key={g.id}
-              style={needsVerification ? { border: '2px solid #f59e0b', background: '#fffdfa' } : {}}
+              style={{
+                marginBottom: '14px',
+                border: needsVerification ? '2px solid #f59e0b' : '1px solid #e2e8f0',
+                background: needsVerification ? '#fffdfa' : '#ffffff'
+              }}
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: '8px' }}>
-                <h3 style={{ margin: 0 }}>
-                  <Link to={`/citizen/grievance/${g.id}`} className="link">{g.complaintId}</Link> | {g.subject}
-                </h3>
-                {needsVerification && (
-                  <Link
-                    to={`/citizen/grievance/${g.id}`}
-                    style={{
-                      background: '#0f766e',
-                      color: '#ffffff',
-                      fontSize: '12px',
-                      fontWeight: 700,
-                      padding: '4px 12px',
-                      borderRadius: '6px',
-                      textDecoration: 'none',
-                      display: 'inline-flex',
-                      alignItems: 'center',
-                      gap: '4px'
-                    }}
-                  >
-                    🔍 Verify & Approve Work
+                <div>
+                  <h3 style={{ margin: 0, fontSize: '16px' }}>
+                    <Link to={`/citizen/grievance/${g.id}`} className="link">{g.complaintId}</Link> | {g.subject}
+                  </h3>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '4px', fontSize: '12px', color: '#64748b' }}>
+                    <span>Category: <strong>{g.category}</strong></span>
+                    <span>&bull;</span>
+                    <span>Location: {g.location}</span>
+                    <span>&bull;</span>
+                    <span>Filed: {formatDate(g.createdAt)}</span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                  {needsVerification && (
+                    <Link
+                      to={`/citizen/grievance/${g.id}`}
+                      style={{
+                        background: '#0f766e',
+                        color: '#ffffff',
+                        fontSize: '12px',
+                        fontWeight: 700,
+                        padding: '4px 12px',
+                        borderRadius: '6px',
+                        textDecoration: 'none',
+                        display: 'inline-flex',
+                        alignItems: 'center',
+                        gap: '4px'
+                      }}
+                    >
+                      🔍 Verify Work
+                    </Link>
+                  )}
+                  <Link to={`/citizen/grievance/${g.id}`} className="btn btn-outline" style={{ padding: '4px 10px', fontSize: '12px' }}>
+                    Details
                   </Link>
-                )}
+                </div>
               </div>
 
-              <StatusStepper status={g.status === 'Closed' ? 'Resolved' : g.status} />
-
-              <p className="active-meta" style={{ marginTop: '10px' }}>
-                <strong>Category:</strong> {g.category} &nbsp;|&nbsp; <strong>Location:</strong> {g.location} &nbsp;|&nbsp;{' '}
-                <strong>Filed Date:</strong> {formatDate(g.createdAt)} &nbsp;|&nbsp; <strong>Status:</strong>{' '}
-                <span className="st" style={{ fontWeight: 700 }}>
-                  {needsVerification ? 'Awaiting Citizen Verification' : g.status}
-                </span>
-              </p>
+              <div style={{ marginTop: '12px' }}>
+                <StatusStepper status={g.status === 'Closed' ? 'Resolved' : g.status} />
+              </div>
             </div>
           );
         })
