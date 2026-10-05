@@ -25,17 +25,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-*.mp4
-*.webm
-
-# Runtime database and uploaded files
-backend/data/db.json
-backend/uploads/*
-!backend/uploads/.gitkeep
-!backend/data/.gitkeep
-
-# Test artifacts
-test-results/
-playwright-report/
-
-
