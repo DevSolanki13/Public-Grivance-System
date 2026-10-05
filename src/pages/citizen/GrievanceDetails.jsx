@@ -498,7 +498,7 @@ function GrievanceDetails() {
           
           {/* Photo 1: Problem Reported (Before) */}
           <div style={{ border: '1.5px solid var(--line)', borderRadius: 10, overflow: 'hidden', background: '#fff' }}>
-            <div style={{ padding: '10px 14px', background: '#f8faf9', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '10px 14px', background: '#f6f8fb', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <strong style={{ fontSize: '0.9rem', color: 'var(--ink)' }}>1. Reported Issue (Before)</strong>
               <span className="badge badge-submitted">Citizen Upload</span>
             </div>
@@ -524,7 +524,7 @@ function GrievanceDetails() {
 
           {/* Photo 2: Resolution Proof (After) */}
           <div style={{ border: hasResolutionProof ? '2px solid var(--green)' : '1.5px dashed var(--line)', borderRadius: 10, overflow: 'hidden', background: hasResolutionProof ? '#fcfefd' : '#fdfefe' }}>
-            <div style={{ padding: '10px 14px', background: hasResolutionProof ? '#effaf4' : '#f8faf9', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '10px 14px', background: hasResolutionProof ? '#effaf4' : '#f6f8fb', borderBottom: '1px solid var(--line)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <strong style={{ fontSize: '0.9rem', color: hasResolutionProof ? '#14603c' : 'var(--ink)' }}>
                 2. Solved Problem Proof (After)
               </strong>

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { Search, Construction, Droplets, Trash2, Lightbulb } from 'lucide-react';
+import { Search, Construction, Droplets, Trash2, Lightbulb, CheckCircle2, Phone, Mail, Clock } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
 import { useAuth } from '../components/ProtectedRoute';
@@ -11,6 +11,13 @@ const services = [
   { title: 'Water supply issues', text: 'No water, low pressure or pipe leakage.', category: 'Water Supply', Icon: Droplets, tone: 'green' },
   { title: 'Garbage disposal', text: 'Missed pickups, overflowing bins and dumping.', category: 'Sanitation', Icon: Trash2, tone: 'mint' },
   { title: 'Streetlight outage', text: 'Lights that are dark, flickering or damaged.', category: 'Street Lights', Icon: Lightbulb, tone: 'green' },
+];
+
+const steps = [
+  { n: 1, title: 'Register', text: 'Create your citizen account in a minute.' },
+  { n: 2, title: 'File complaint', text: 'Describe the issue and share the location.' },
+  { n: 3, title: 'Track progress', text: 'See which officer and stage your case is at.' },
+  { n: 4, title: 'Get resolution', text: 'Receive the update and give your feedback.' },
 ];
 
 const promptText = {
@@ -45,46 +52,99 @@ function Home() {
   return (
     <>
       <div className="home">
-        <div className="decor" aria-hidden="true">
-          <span className="s1" /><span className="s2" /><span className="s3" /><span className="s4" />
-        </div>
-
-        {/* Shows Login/Register for visitors, and the citizen/admin links once logged in */}
         <Navbar role={profile?.role || 'public'} />
-        <div className="band" />
 
-        {/* Track bar */}
-        <form className="track-bar" id="track" onSubmit={handleTrack}>
-          <Search size={22} color="#456865" />
-          <input
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            placeholder="Enter your complaint ID, e.g. GRV-2026-K3F9A"
-            aria-label="Complaint ID"
-          />
-          <button type="submit" className="btn btn-primary">Track request</button>
-        </form>
-
-        <main className="home-main">
-          {/* Service cards */}
-          <section className="service-grid" id="services">
-            {services.map(({ title, text, category, Icon, tone }) => (
-              <div key={title} className={`service-card ${tone}`}>
-                <div className="icon-bubble"><Icon size={44} strokeWidth={1.6} /></div>
-                <h3>{title}</h3>
-                <p>{text}</p>
-
+        {/* Hero: purpose + track box */}
+        <section className="hero">
+          <div className="hero-inner">
+            <div>
+              <h1>Raise your civic complaint. Track it until it is resolved.</h1>
+              <p>
+                JanSewa is the official single-window portal to register grievances about roads, water,
+                sanitation and street lights, and to follow every step of the action taken.
+              </p>
+              <div className="hero-cta">
                 {user ? (
-                  <Link to={`/citizen/submit?category=${encodeURIComponent(category)}`} className="btn">
-                    File a complaint
-                  </Link>
+                  <Link to="/citizen/submit" className="btn btn-saffron">File a new complaint</Link>
                 ) : (
-                  <button type="button" className="btn" onClick={() => setPrompt('file')}>
-                    File a complaint
-                  </button>
+                  <>
+                    <Link to="/register" className="btn btn-saffron">Register &amp; file complaint</Link>
+                    <Link to="/login" className="btn btn-outline">Login</Link>
+                  </>
                 )}
               </div>
+            </div>
+
+            <div className="track-card" id="track">
+              <h2>Track your complaint</h2>
+              <p>Enter the complaint ID you received after filing.</p>
+              <form className="track-bar" onSubmit={handleTrack}>
+                <input
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder="e.g. GRV-2026-K3F9A"
+                  aria-label="Complaint ID"
+                />
+                <button type="submit" className="btn btn-primary"><Search size={16} /> Track status</button>
+              </form>
+            </div>
+          </div>
+        </section>
+
+        <main className="home-main" id="main-content">
+          {/* How it works */}
+          <div className="how-grid">
+            {steps.map(({ n, title, text }) => (
+              <div key={n} className="how-card">
+                <span className="how-num">{n}</span>
+                <div><h3>{title}</h3><p>{text}</p></div>
+              </div>
             ))}
+          </div>
+
+          {/* Services */}
+          <section className="home-section" id="services">
+            <h2>Complaint Categories</h2>
+            <p className="section-intro">Select the type of problem you want to report.</p>
+            <div className="service-grid">
+              {services.map(({ title, text, category, Icon, tone }) => (
+                <div key={title} className={`service-card ${tone}`}>
+                  <div className="icon-bubble"><Icon size={26} strokeWidth={1.8} /></div>
+                  <h3>{title}</h3>
+                  <p>{text}</p>
+                  {user ? (
+                    <Link to={`/citizen/submit?category=${encodeURIComponent(category)}`} className="btn">
+                      File a complaint
+                    </Link>
+                  ) : (
+                    <button type="button" className="btn" onClick={() => setPrompt('file')}>
+                      File a complaint
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* Info */}
+          <section className="home-section">
+            <div className="info-grid">
+              <div className="info-box">
+                <h3>Before you file</h3>
+                <ul>
+                  <li><CheckCircle2 size={16} /> Register or log in with your mobile number / email.</li>
+                  <li><CheckCircle2 size={16} /> Describe the problem and mark the location on the map.</li>
+                  <li><CheckCircle2 size={16} /> Attach a photo if you have one – it speeds up action.</li>
+                  <li><CheckCircle2 size={16} /> Note your complaint ID to track progress at any time.</li>
+                </ul>
+              </div>
+              <div className="info-box">
+                <h3>Need help?</h3>
+                <div className="contact-line"><Phone size={16} /> 1-800-JANSEWA (Toll Free)</div>
+                <div className="contact-line"><Mail size={16} /> support@jansewa.gov.in</div>
+                <div className="contact-line"><Clock size={16} /> Mon–Sat, 9:00 AM – 6:00 PM</div>
+              </div>
+            </div>
           </section>
         </main>
 

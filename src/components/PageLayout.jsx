@@ -1,20 +1,18 @@
+import { Link } from 'react-router-dom';
 import Navbar from './Navbar';
 import Footer from './Footer';
 
-// Wraps every inner page: navbar + teal title band + content + footer.
+// Wraps every inner page: government header + title band + content + footer.
 // width: 'wide' (default) | 'narrow' (forms) | 'auth' (login/register)
 function PageLayout({ role = 'public', title, subtitle, action, width = 'wide', children }) {
   return (
     <div className={`page ${width}`}>
-      <div className="decor" aria-hidden="true">
-        <span className="s1" /><span className="s2" /><span className="s3" /><span className="s4" />
-      </div>
-
       <Navbar role={role} />
 
       <div className="page-band">
         <div className="page-band-inner">
           <div>
+            <div className="crumbs"><Link to="/">Home</Link> &rsaquo; {title}</div>
             <h1>{title}</h1>
             {subtitle && <p>{subtitle}</p>}
           </div>
@@ -22,7 +20,7 @@ function PageLayout({ role = 'public', title, subtitle, action, width = 'wide', 
         </div>
       </div>
 
-      <main className="page-body">{children}</main>
+      <main className="page-body" id="main-content">{children}</main>
       <Footer />
     </div>
   );

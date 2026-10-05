@@ -226,7 +226,7 @@ function AdminGrievanceDetails() {
 
           {/* If Resolved: Also show the Officer's Resolution Proof Photo ("After") */}
           {isResolvedState && (
-            <div className="card" style={{ border: '2px solid var(--green)', background: '#f5fcf8' }}>
+            <div className="card" style={{ border: '2px solid var(--green)', background: '#f3f6fb' }}>
               <h3 style={{ fontSize: '1.1rem', marginBottom: 12, color: 'var(--green)', display: 'flex', alignItems: 'center', gap: 8 }}>
                 <CheckCircle size={20} /> Resolution Proof Uploaded by Officer
               </h3>
@@ -262,7 +262,7 @@ function AdminGrievanceDetails() {
 
             {isSubmittedState ? (
               <form onSubmit={handleAssignOfficer}>
-                <div style={{ background: '#f0f9f6', padding: 12, borderRadius: 8, marginBottom: 16, borderLeft: '4px solid var(--accent)' }}>
+                <div style={{ background: '#eef3fa', padding: 12, borderRadius: 8, marginBottom: 16, borderLeft: '4px solid var(--accent)' }}>
                   <p style={{ fontSize: '0.85rem', color: 'var(--accent-dark)', fontWeight: 600, margin: 0 }}>
                     1. Review the citizen's photo and details on the left.<br />
                     2. Select the responsible department and officer to handle the repair.<br />

@@ -14,7 +14,7 @@ const PRIORITY_COLORS = {
 };
 
 const createCustomIcon = (priority = 'MEDIUM') => {
-  const color = PRIORITY_COLORS[priority.toUpperCase()] || '#0f766e';
+  const color = PRIORITY_COLORS[priority.toUpperCase()] || '#0f2f5e';
   const html = `
     <div style="
       background-color: ${color};
@@ -141,7 +141,7 @@ export default function GrievanceMap({ grievances = [], height = '520px', showHo
       popupContent.style.fontFamily = 'inherit';
       popupContent.style.padding = '4px';
       popupContent.innerHTML = `
-        <div style="font-size: 11px; font-weight: 700; color: #0f766e; text-transform: uppercase;">
+        <div style="font-size: 11px; font-weight: 700; color: #0f2f5e; text-transform: uppercase;">
           ${g.id || g.grievanceId}
         </div>
         <div style="font-size: 13px; font-weight: 700; color: #0f172a; margin: 2px 0 4px;">
@@ -162,7 +162,7 @@ export default function GrievanceMap({ grievances = [], height = '520px', showHo
             ${g.status?.replace(/_/g, ' ') || 'UNDER_REVIEW'}
           </span>
           <span style="
-            background: ${PRIORITY_COLORS[g.priority?.toUpperCase()] || '#0f766e'}; 
+            background: ${PRIORITY_COLORS[g.priority?.toUpperCase()] || '#0f2f5e'}; 
             color: #fff; 
             padding: 2px 6px; 
             border-radius: 4px; 
@@ -174,7 +174,7 @@ export default function GrievanceMap({ grievances = [], height = '520px', showHo
         </div>
         <button id="btn-${g.id || g.grievanceId}" style="
           width: 100%;
-          background: #0f766e;
+          background: #0f2f5e;
           color: white;
           border: none;
           padding: 6px 10px;
@@ -216,7 +216,7 @@ export default function GrievanceMap({ grievances = [], height = '520px', showHo
           }}
         >
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <MapPin size={18} color="#0f766e" />
+            <MapPin size={18} color="#0f2f5e" />
             <h3 style={{ fontSize: '15px', margin: 0, fontWeight: 700 }}>Civic GIS Complaint Map</h3>
             <span
               style={{
@@ -242,7 +242,7 @@ export default function GrievanceMap({ grievances = [], height = '520px', showHo
                   type="button"
                   onClick={() => setPriorityFilter(p)}
                   style={{
-                    background: priorityFilter === p ? '#0f766e' : '#f8fafc',
+                    background: priorityFilter === p ? '#0f2f5e' : '#f8fafc',
                     color: priorityFilter === p ? '#ffffff' : '#475569',
                     border: '1px solid #e2e8f0',
                     fontSize: '11px',
@@ -344,7 +344,7 @@ export default function GrievanceMap({ grievances = [], height = '520px', showHo
                   <strong style={{ fontSize: '13px', color: '#0f172a' }}>{h.area}</strong>
                   <span
                     style={{
-                      background: idx === 0 ? '#ea580c' : '#0f766e',
+                      background: idx === 0 ? '#ea580c' : '#0f2f5e',
                       color: '#ffffff',
                       fontSize: '11px',
                       fontWeight: 700,

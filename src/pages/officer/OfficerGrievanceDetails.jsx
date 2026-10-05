@@ -218,7 +218,7 @@ function OfficerGrievanceDetails() {
 
         {/* Right Column: Officer Resolution Proof ("After" Photo) */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
-          <div className={`card ${isResolved ? 'success-box' : ''}`} style={isResolved ? { textAlign: 'left', background: '#f5fcf8', border: '2px solid var(--green)' } : {}}>
+          <div className={`card ${isResolved ? 'success-box' : ''}`} style={isResolved ? { textAlign: 'left', background: '#f3f6fb', border: '2px solid var(--green)' } : {}}>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 14 }}>
               <CheckCircle2 size={22} color={isResolved ? 'var(--green)' : 'var(--accent-dark)'} />
               <h2 style={{ fontSize: '1.25rem', margin: 0, color: isResolved ? '#14603c' : 'var(--ink)' }}>

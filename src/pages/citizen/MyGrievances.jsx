@@ -93,8 +93,8 @@ function MyGrievances() {
             to={`/citizen/grievance/${pendingApproval[0].id || pendingApproval[0].complaintId}`}
             className="btn btn-primary"
             style={{
-              background: '#0f766e',
-              borderColor: '#0f766e',
+              background: '#0f2f5e',
+              borderColor: '#0f2f5e',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
@@ -117,9 +117,9 @@ function MyGrievances() {
             setSearchParams({});
           }}
           style={{
-            background: mainTab === 'active' ? '#0f766e' : '#f8fafc',
+            background: mainTab === 'active' ? '#0f2f5e' : '#f8fafc',
             color: mainTab === 'active' ? '#ffffff' : '#475569',
-            border: '1px solid ' + (mainTab === 'active' ? '#0f766e' : '#cbd5e1'),
+            border: '1px solid ' + (mainTab === 'active' ? '#0f2f5e' : '#cbd5e1'),
             padding: '8px 18px',
             borderRadius: '8px',
             fontSize: '14px',
@@ -138,9 +138,9 @@ function MyGrievances() {
             setSearchParams({ tab: 'history' });
           }}
           style={{
-            background: mainTab === 'history' ? '#0f766e' : '#f8fafc',
+            background: mainTab === 'history' ? '#0f2f5e' : '#f8fafc',
             color: mainTab === 'history' ? '#ffffff' : '#475569',
-            border: '1px solid ' + (mainTab === 'history' ? '#0f766e' : '#cbd5e1'),
+            border: '1px solid ' + (mainTab === 'history' ? '#0f2f5e' : '#cbd5e1'),
             padding: '8px 18px',
             borderRadius: '8px',
             fontSize: '14px',
@@ -213,7 +213,7 @@ function MyGrievances() {
                               gap: '4px',
                               fontSize: '12px',
                               fontWeight: 700,
-                              background: '#0f766e',
+                              background: '#0f2f5e',
                               color: '#ffffff',
                               padding: '4px 10px',
                               borderRadius: '6px',

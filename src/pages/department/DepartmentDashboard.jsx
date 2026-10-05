@@ -125,7 +125,7 @@ function DepartmentDashboard() {
             fontSize: '13px',
             fontWeight: 700,
             cursor: 'pointer',
-            background: activeTab === 'cases' ? '#0f766e' : '#f1f5f9',
+            background: activeTab === 'cases' ? '#0f2f5e' : '#f1f5f9',
             color: activeTab === 'cases' ? '#ffffff' : '#475569'
           }}
         >
@@ -145,7 +145,7 @@ function DepartmentDashboard() {
             fontSize: '13px',
             fontWeight: 700,
             cursor: 'pointer',
-            background: activeTab === 'workload' ? '#0f766e' : '#f1f5f9',
+            background: activeTab === 'workload' ? '#0f2f5e' : '#f1f5f9',
             color: activeTab === 'workload' ? '#ffffff' : '#475569'
           }}
         >
@@ -165,7 +165,7 @@ function DepartmentDashboard() {
             fontSize: '13px',
             fontWeight: 700,
             cursor: 'pointer',
-            background: activeTab === 'history' ? '#0f766e' : '#f1f5f9',
+            background: activeTab === 'history' ? '#0f2f5e' : '#f1f5f9',
             color: activeTab === 'history' ? '#ffffff' : '#475569'
           }}
         >
@@ -185,7 +185,7 @@ function DepartmentDashboard() {
             fontSize: '13px',
             fontWeight: 700,
             cursor: 'pointer',
-            background: activeTab === 'analytics' ? '#0f766e' : '#f1f5f9',
+            background: activeTab === 'analytics' ? '#0f2f5e' : '#f1f5f9',
             color: activeTab === 'analytics' ? '#ffffff' : '#475569'
           }}
         >
@@ -270,7 +270,7 @@ function DepartmentDashboard() {
                       <td>{g.citizenName || 'Citizen'}</td>
                       <td>
                         {g.assignedOfficerName ? (
-                          <span style={{ fontWeight: 600, color: '#0f766e' }}>
+                          <span style={{ fontWeight: 600, color: '#0f2f5e' }}>
                             👤 {g.assignedOfficerName}
                           </span>
                         ) : (
@@ -284,7 +284,7 @@ function DepartmentDashboard() {
                           style={{
                             fontSize: '11px',
                             fontWeight: 700,
-                            color: g.priority === 'CRITICAL' ? '#dc2626' : g.priority === 'HIGH' ? '#ea580c' : '#0f766e'
+                            color: g.priority === 'CRITICAL' ? '#dc2626' : g.priority === 'HIGH' ? '#ea580c' : '#0f2f5e'
                           }}
                         >
                           {g.priority || 'MEDIUM'}

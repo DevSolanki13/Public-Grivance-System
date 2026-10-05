@@ -62,7 +62,7 @@ export default function OfficerWorkloadPanel({ officers = [] }) {
     <div className="card" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0', margin: '20px 0' }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '16px' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-          <Users size={18} color="#0f766e" />
+          <Users size={18} color="#0f2f5e" />
           <h3 style={{ margin: 0, fontSize: '16px', fontWeight: 700 }}>Field Officer Workload & Dispatch Roster</h3>
         </div>
         <span style={{ fontSize: '12px', color: '#64748b' }}>Real-time field distribution</span>

@@ -115,9 +115,9 @@ function OfficerDashboard() {
             setFilter('All');
           }}
           style={{
-            background: tabMode === 'active' ? '#0f766e' : '#f8fafc',
+            background: tabMode === 'active' ? '#0f2f5e' : '#f8fafc',
             color: tabMode === 'active' ? '#ffffff' : '#475569',
-            border: '1px solid ' + (tabMode === 'active' ? '#0f766e' : '#cbd5e1'),
+            border: '1px solid ' + (tabMode === 'active' ? '#0f2f5e' : '#cbd5e1'),
             padding: '8px 18px',
             borderRadius: '8px',
             fontSize: '14px',
@@ -136,9 +136,9 @@ function OfficerDashboard() {
             setFilter('All');
           }}
           style={{
-            background: tabMode === 'history' ? '#0f766e' : '#f8fafc',
+            background: tabMode === 'history' ? '#0f2f5e' : '#f8fafc',
             color: tabMode === 'history' ? '#ffffff' : '#475569',
-            border: '1px solid ' + (tabMode === 'history' ? '#0f766e' : '#cbd5e1'),
+            border: '1px solid ' + (tabMode === 'history' ? '#0f2f5e' : '#cbd5e1'),
             padding: '8px 18px',
             borderRadius: '8px',
             fontSize: '14px',

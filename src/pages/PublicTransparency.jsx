@@ -25,7 +25,7 @@ export default function PublicTransparency() {
   const resolvedCases = grievances.filter((g) => g.status === 'CLOSED');
 
   return (
-    <PageLayout>
+    <PageLayout title="Public Transparency Portal">
       <div className="container" style={{ padding: '40px 20px', maxWidth: '1200px', margin: '0 auto' }}>
         {/* Header */}
         <div style={{ textAlign: 'center', marginBottom: '40px' }}>
@@ -61,7 +61,7 @@ export default function PublicTransparency() {
           }}
         >
           <div className="card" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0', textAlign: 'center' }}>
-            <div style={{ fontSize: '32px', fontWeight: 800, color: '#0f766e' }}>{total}</div>
+            <div style={{ fontSize: '32px', fontWeight: 800, color: '#0f2f5e' }}>{total}</div>
             <div style={{ fontSize: '13px', fontWeight: 600, color: '#475569', marginTop: '4px' }}>Total Complaints Filed</div>
           </div>
 
@@ -108,7 +108,7 @@ export default function PublicTransparency() {
                 style={{ padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '8px' }}>
-                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f766e' }}>
+                  <span style={{ fontSize: '12px', fontWeight: 700, color: '#0f2f5e' }}>
                     {c.id || c.grievanceId}
                   </span>
                   <span
@@ -129,7 +129,7 @@ export default function PublicTransparency() {
                   {c.title || c.subject}
                 </h3>
                 <div style={{ fontSize: '12px', color: '#64748b', marginBottom: '12px', display: 'flex', alignItems: 'center', gap: '4px' }}>
-                  <MapPin size={13} color="#0f766e" /> {c.location?.address || c.location?.area || 'Ward 4'}
+                  <MapPin size={13} color="#0f2f5e" /> {c.location?.address || c.location?.area || 'Ward 4'}
                 </div>
 
                 {/* Proof Thumbnails */}

@@ -134,7 +134,7 @@ export default function NotificationBell() {
             }}
           >
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <Bell size={16} color="#0f766e" />
+              <Bell size={16} color="#0f2f5e" />
               <strong style={{ fontSize: '14px', color: '#0f172a' }}>{t('notifications')}</strong>
               {unreadCount > 0 && (
                 <span
@@ -159,7 +159,7 @@ export default function NotificationBell() {
                 style={{
                   background: 'none',
                   border: 'none',
-                  color: '#0f766e',
+                  color: '#0f2f5e',
                   fontSize: '12px',
                   fontWeight: 600,
                   cursor: 'pointer',
@@ -227,7 +227,7 @@ export default function NotificationBell() {
                         <span
                           style={{
                             fontSize: '11px',
-                            color: '#0f766e',
+                            color: '#0f2f5e',
                             fontWeight: 600,
                             display: 'flex',
                             alignItems: 'center',

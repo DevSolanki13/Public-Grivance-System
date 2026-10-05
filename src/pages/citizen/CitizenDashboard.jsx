@@ -122,8 +122,8 @@ function CitizenDashboard() {
             to={`/citizen/grievance/${pendingApproval[0].id || pendingApproval[0].complaintId}`}
             className="btn btn-primary"
             style={{
-              background: '#0f766e',
-              borderColor: '#0f766e',
+              background: '#0f2f5e',
+              borderColor: '#0f2f5e',
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
@@ -211,7 +211,7 @@ function CitizenDashboard() {
                     <Link
                       to={`/citizen/grievance/${g.id}`}
                       style={{
-                        background: '#0f766e',
+                        background: '#0f2f5e',
                         color: '#ffffff',
                         fontSize: '12px',
                         fontWeight: 700,

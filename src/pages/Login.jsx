@@ -114,7 +114,7 @@ function Login() {
         )}
 
         {/* 1-Click Instant Demo Access Box */}
-        <div className="demo-instant-box" style={{ background: '#f0f9f6', border: '1.5px solid var(--accent)', borderRadius: '12px', padding: '16px', marginBottom: '22px' }}>
+        <div className="demo-instant-box" style={{ background: '#eef3fa', border: '1.5px solid var(--accent)', borderRadius: '12px', padding: '16px', marginBottom: '22px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px', color: 'var(--accent-dark)', fontWeight: 800, fontSize: '0.92rem', marginBottom: '10px' }}>
             <Sparkles size={16} />
             <span>INSTANT DEMO ACCESS (No Login Required)</span>

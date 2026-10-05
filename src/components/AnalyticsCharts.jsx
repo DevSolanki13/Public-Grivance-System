@@ -25,14 +25,14 @@ export default function AnalyticsCharts({ grievances = [] }) {
   ];
 
   // Colors for charts
-  const palette = ['#0f766e', '#0284c7', '#ea580c', '#ca8a04', '#7c3aed', '#db2777'];
+  const palette = ['#0f2f5e', '#0284c7', '#ea580c', '#ca8a04', '#7c3aed', '#db2777'];
 
   return (
     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '20px', margin: '20px 0' }}>
       {/* 1. Category Distribution Card */}
       <div className="card" style={{ padding: '20px', borderRadius: '12px', border: '1px solid #e2e8f0' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '16px' }}>
-          <PieChart size={18} color="#0f766e" />
+          <PieChart size={18} color="#0f2f5e" />
           <h4 style={{ margin: 0, fontSize: '15px', fontWeight: 700 }}>Complaints by Category</h4>
         </div>
 

@@ -356,7 +356,7 @@ function SubmitGrievance() {
                   alignItems: 'center',
                   gap: 5,
                   borderRadius: 999,
-                  background: '#f0f9f6',
+                  background: '#eef3fa',
                   borderColor: 'var(--accent-dark)',
                   color: 'var(--accent-dark)',
                 }}
