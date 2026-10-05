@@ -4,26 +4,45 @@ import { AuthProvider } from './context/AuthContext';
 import { NotificationProvider } from './context/NotificationContext';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
+// Resilient lazy-loading helper: if a new deployment replaces chunk hashes, automatically reload the page once
+function lazyWithRetry(factory) {
+  return lazy(async () => {
+    const pageHasBeenForceRefreshed = window.sessionStorage.getItem('page-refreshed-for-chunk-load');
+    try {
+      const module = await factory();
+      window.sessionStorage.removeItem('page-refreshed-for-chunk-load');
+      return module;
+    } catch (error) {
+      if (!pageHasBeenForceRefreshed) {
+        window.sessionStorage.setItem('page-refreshed-for-chunk-load', 'true');
+        window.location.reload();
+        return new Promise(() => {}); // Wait for browser reload
+      }
+      throw error;
+    }
+  });
+}
+
 // Lazy-loaded routes for code splitting and optimal bundle performance
-const Home = lazy(() => import('./pages/public/Home'));
-const Transparency = lazy(() => import('./pages/public/Transparency'));
-const TrackPublic = lazy(() => import('./pages/public/TrackPublic'));
+const Home = lazyWithRetry(() => import('./pages/public/Home'));
+const Transparency = lazyWithRetry(() => import('./pages/public/Transparency'));
+const TrackPublic = lazyWithRetry(() => import('./pages/public/TrackPublic'));
 
-const Login = lazy(() => import('./pages/auth/Login'));
-const Register = lazy(() => import('./pages/auth/Register'));
+const Login = lazyWithRetry(() => import('./pages/auth/Login'));
+const Register = lazyWithRetry(() => import('./pages/auth/Register'));
 
-const CitizenDashboard = lazy(() => import('./pages/citizen/CitizenDashboard'));
-const SubmitGrievance = lazy(() => import('./pages/citizen/SubmitGrievance'));
-const MyGrievances = lazy(() => import('./pages/citizen/MyGrievances'));
-const CitizenGrievanceDetail = lazy(() => import('./pages/citizen/CitizenGrievanceDetail'));
+const CitizenDashboard = lazyWithRetry(() => import('./pages/citizen/CitizenDashboard'));
+const SubmitGrievance = lazyWithRetry(() => import('./pages/citizen/SubmitGrievance'));
+const MyGrievances = lazyWithRetry(() => import('./pages/citizen/MyGrievances'));
+const CitizenGrievanceDetail = lazyWithRetry(() => import('./pages/citizen/CitizenGrievanceDetail'));
 
-const OfficerDashboard = lazy(() => import('./pages/officer/OfficerDashboard'));
-const DepartmentDashboard = lazy(() => import('./pages/department/DepartmentDashboard'));
-const OfficerWorkload = lazy(() => import('./pages/department/OfficerWorkload'));
+const OfficerDashboard = lazyWithRetry(() => import('./pages/officer/OfficerDashboard'));
+const DepartmentDashboard = lazyWithRetry(() => import('./pages/department/DepartmentDashboard'));
+const OfficerWorkload = lazyWithRetry(() => import('./pages/department/OfficerWorkload'));
 
-const AdminDashboard = lazy(() => import('./pages/admin/AdminDashboard'));
-const ComplaintMap = lazy(() => import('./pages/admin/ComplaintMap'));
-const AuditLogs = lazy(() => import('./pages/admin/AuditLogs'));
+const AdminDashboard = lazyWithRetry(() => import('./pages/admin/AdminDashboard'));
+const ComplaintMap = lazyWithRetry(() => import('./pages/admin/ComplaintMap'));
+const AuditLogs = lazyWithRetry(() => import('./pages/admin/AuditLogs'));
 
 const PageLoader = () => (
   <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', minHeight: '50vh', gap: 12 }}>
