@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 
 import apiRouter from './routes/index.js';
 import { db } from './db.js';
+import { isPrismaConfigured } from './prisma.js';
 import { evaluateAllGrievancesSLA } from './services/slaService.js';
 import { errorHandler } from './middleware/errorHandler.js';
 import { authenticate } from './middleware/authMiddleware.js';
@@ -129,6 +130,7 @@ const server = app.listen(PORT, () => {
   console.log(`📡 URL: http://localhost:${PORT}`);
   console.log(`🛡️  CORS Origin: ${CORS_ORIGIN}`);
   console.log(`📁 Uploads Dir: ${UPLOADS_DIR}`);
+  console.log(`🐘 Database: ${isPrismaConfigured ? 'Supabase PostgreSQL (Active via Prisma)' : 'Embedded JSON Store (Add Supabase password to DATABASE_URL to activate)'}`);
   console.log(`======================================================\n`);
 });
 
