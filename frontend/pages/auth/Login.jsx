@@ -148,6 +148,66 @@ export default function Login() {
           </button>
         </div>
 
+        {/* Handy 1-Click Demo Credentials Box */}
+        <div
+          style={{
+            marginBottom: 16,
+            background: '#f8fafc',
+            border: '1px solid #e2e8f0',
+            borderRadius: 8,
+            padding: '10px 14px',
+            fontSize: 13,
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 6 }}>
+            <span style={{ color: '#475569' }}>
+              <strong>Demo {role === 'department_head' ? 'Dept Head' : role.charAt(0).toUpperCase() + role.slice(1)}:</strong>{' '}
+              <code style={{ background: '#e2e8f0', padding: '2px 6px', borderRadius: 4, color: '#0f172a' }}>
+                {role === 'admin'
+                  ? 'admin@jansewa.gov.in'
+                  : role === 'department_head'
+                  ? 'water@jansewa.gov.in'
+                  : role === 'officer'
+                  ? 'suresh.more@water.gov.in'
+                  : 'palak.rathod@example.com'}
+              </code>
+            </span>
+            <button
+              type="button"
+              onClick={() => {
+                if (role === 'admin') {
+                  setEmail('admin@jansewa.gov.in');
+                  setPassword('password123');
+                } else if (role === 'department_head') {
+                  setEmail('water@jansewa.gov.in');
+                  setPassword('password123');
+                } else if (role === 'officer') {
+                  setEmail('suresh.more@water.gov.in');
+                  setPassword('password123');
+                } else {
+                  setEmail('palak.rathod@example.com');
+                  setPassword('password123');
+                }
+              }}
+              style={{
+                background: '#0284c7',
+                color: '#fff',
+                border: 'none',
+                padding: '4px 10px',
+                borderRadius: 6,
+                fontSize: 12,
+                fontWeight: 600,
+                cursor: 'pointer',
+              }}
+            >
+              Fill Credentials
+            </button>
+          </div>
+          <div style={{ fontSize: 11, color: '#64748b', marginTop: 4 }}>
+            Password for all demo accounts: <code>password123</code>
+          </div>
+        </div>
+
         <form onSubmit={handleStandardLogin}>
           <div className="form-group">
             <label htmlFor="email">Email</label>
