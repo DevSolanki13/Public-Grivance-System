@@ -105,6 +105,9 @@ export default function Register() {
               onChange={handleChange}
               placeholder="At least 6 characters"
             />
+            <small style={{ color: 'var(--text-muted, #64748b)', fontSize: '0.8rem', marginTop: 4, display: 'block' }}>
+              Must be at least 6 characters.
+            </small>
           </div>
 
           <button
