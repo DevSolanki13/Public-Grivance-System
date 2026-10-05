@@ -26,6 +26,12 @@ if (!fs.existsSync(UPLOADS_DIR)) {
   fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 }
 
+// Fail fast: never start a production server without a real signing secret.
+if (process.env.NODE_ENV === 'production' && !(process.env.JWT_SECRET || '').trim()) {
+  console.error('FATAL: JWT_SECRET is not set. Add it in Vercel -> Settings -> Environment Variables.');
+  process.exit(1);
+}
+
 const app = express();
 const PORT = process.env.PORT || 5000;
 const CORS_ORIGIN = process.env.CORS_ORIGIN || 'http://localhost:5173';
@@ -37,21 +43,25 @@ app.use(
   })
 );
 
-// Strictly configured CORS (enforces CORS_ORIGIN and allows Vercel preview/production domains)
+// Behind Vercel's proxy the real client IP is in X-Forwarded-For. Without this,
+// every visitor shares one IP and the login rate-limiter locks everyone out together.
+app.set('trust proxy', 1);
+
+// Strict CORS: only the origins listed in CORS_ORIGIN (comma separated) are allowed in production.
+// Same-origin requests (frontend and API on one Vercel domain) send no CORS headers and are unaffected.
+const ALLOWED_ORIGINS = CORS_ORIGIN.split(',').map((o) => o.trim()).filter(Boolean);
 app.use(
   cors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl during dev/testing) or matching configured origin or Vercel domains
       if (
         !origin ||
-        origin === CORS_ORIGIN ||
-        CORS_ORIGIN === '*' ||
         process.env.NODE_ENV !== 'production' ||
-        (origin && origin.endsWith('.vercel.app'))
+        ALLOWED_ORIGINS.includes('*') ||
+        ALLOWED_ORIGINS.includes(origin)
       ) {
         callback(null, true);
       } else {
-        callback(new Error(`CORS policy violation: Origin '${origin}' is not permitted.`));
+        callback(null, false); // browser blocks it; no 500 error page
       }
     },
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

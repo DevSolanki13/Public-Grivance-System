@@ -849,6 +849,82 @@ class DatabaseStore {
     }
   }
 
+  // --- Prisma Integration ---
+  setPrismaClient(client) {
+    this.prisma = client;
+  }
+
+  async syncToPrisma(type, payload) {
+    if (!this.prisma) return;
+    try {
+      if (type === 'addUser') {
+        const { rawPassword, ...cleanUser } = payload;
+        await this.prisma.user.upsert({
+          where: { email: cleanUser.email },
+          update: { ...cleanUser },
+          create: { ...cleanUser },
+        });
+      } else if (type === 'addGrievance') {
+        await this.prisma.grievance.upsert({
+          where: { complaintId: payload.complaintId },
+          update: {
+            ...payload,
+            assignedAt: payload.assignedAt ? new Date(payload.assignedAt) : null,
+            slaStartedAt: new Date(payload.slaStartedAt),
+            slaDeadline: new Date(payload.slaDeadline),
+            createdAt: new Date(payload.createdAt),
+            updatedAt: new Date(payload.updatedAt),
+          },
+          create: {
+            ...payload,
+            assignedAt: payload.assignedAt ? new Date(payload.assignedAt) : null,
+            slaStartedAt: new Date(payload.slaStartedAt),
+            slaDeadline: new Date(payload.slaDeadline),
+            createdAt: new Date(payload.createdAt),
+            updatedAt: new Date(payload.updatedAt),
+          },
+        });
+      } else if (type === 'updateGrievance') {
+        await this.prisma.grievance.update({
+          where: { id: payload.id },
+          data: {
+            ...payload,
+            assignedAt: payload.assignedAt ? new Date(payload.assignedAt) : null,
+            slaStartedAt: payload.slaStartedAt ? new Date(payload.slaStartedAt) : undefined,
+            slaDeadline: payload.slaDeadline ? new Date(payload.slaDeadline) : undefined,
+            updatedAt: new Date(),
+          },
+        });
+      } else if (type === 'addNotification') {
+        await this.prisma.notification.create({
+          data: {
+            id: payload.id,
+            userId: payload.userId,
+            title: payload.title,
+            message: payload.message,
+            type: payload.type || 'info',
+            isRead: payload.isRead || false,
+            grievanceId: payload.grievanceId || null,
+          },
+        });
+      } else if (type === 'addAuditLog') {
+        await this.prisma.auditLog.create({
+          data: {
+            id: payload.id,
+            action: payload.action,
+            grievanceId: payload.grievanceId || null,
+            complaintId: payload.complaintId || null,
+            performedBy: payload.performedBy || 'System',
+            performedByRole: payload.performedByRole || 'admin',
+            details: payload.details || '',
+          },
+        });
+      }
+    } catch (err) {
+      console.warn(`[Prisma Sync] Warning syncing ${type}:`, err.message);
+    }
+  }
+
   // --- Collection Accessors ---
   getUsers() { return this.data.users; }
   getDepartments() { return this.data.departments; }
@@ -861,12 +937,14 @@ class DatabaseStore {
   addUser(user) {
     this.data.users.push(user);
     this.save();
+    this.syncToPrisma('addUser', user);
     return user;
   }
 
   addGrievance(g) {
     this.data.grievances.unshift(g);
     this.save();
+    this.syncToPrisma('addGrievance', g);
     return g;
   }
 
@@ -881,12 +959,14 @@ class DatabaseStore {
     };
     this.data.grievances[index] = updated;
     this.save();
+    this.syncToPrisma('updateGrievance', updated);
     return updated;
   }
 
   addNotification(notif) {
     this.data.notifications.unshift(notif);
     this.save();
+    this.syncToPrisma('addNotification', notif);
     return notif;
   }
 
@@ -900,14 +980,16 @@ class DatabaseStore {
   }
 
   addAuditLog(entry) {
-    this.data.auditLogs.unshift({
+    const logItem = {
       id: `audit-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
       timestamp: new Date().toISOString(),
       description: entry.details || entry.description,
       details: entry.details || entry.description,
       ...entry,
-    });
+    };
+    this.data.auditLogs.unshift(logItem);
     this.save();
+    this.syncToPrisma('addAuditLog', logItem);
   }
 
   reset() {

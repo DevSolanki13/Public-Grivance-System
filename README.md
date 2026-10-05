@@ -349,3 +349,13 @@ Vite compiles and chunks the frontend into optimized static assets in `frontend/
 
 ## 📄 License
 This project was developed for educational and civic governance demonstration purposes under the **MIT License**.
+
+
+---
+
+## 🚀 Production Notes (Vercel)
+
+1. **Environment variables** (Vercel → Settings → Environment Variables): `NODE_ENV=production`, `JWT_SECRET=<48+ random hex chars>`, `CORS_ORIGIN=https://<your-domain>`. The server refuses to start in production without `JWT_SECRET`.
+2. **Demo logins on the login page** are hidden in production. Set `VITE_SHOW_DEMO=true` (build-time) only for a supervised demo, then remove it.
+3. **Data persistence:** this build stores data in a JSON file under `/tmp` on Vercel, which is temporary and not shared between serverless instances. Accounts and complaints can disappear. For real use, move the data layer to a database (the Prisma schema in `backend/prisma/` is the starting point; the services still call `db.js`).
+4. **Uploads** are also written to `/tmp`; use object storage (Supabase Storage / Cloudinary) for real use. Vercel limits request bodies to about 4.5 MB.

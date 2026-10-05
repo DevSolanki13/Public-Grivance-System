@@ -215,29 +215,14 @@ export class GrievanceService {
     const cleanPriority = String(priority).toUpperCase();
     const validPriority = PRIORITIES.includes(cleanPriority) ? cleanPriority : 'MEDIUM';
 
+    // Accept a category id (preferred) or its exact name; anything else is rejected.
     const cleanCat = String(categoryId || '').trim().toLowerCase();
-    let category = db.getCategories().find(
-      (c) =>
-        c.id.toLowerCase() === cleanCat ||
-        c.name.toLowerCase() === cleanCat ||
-        c.departmentId.toLowerCase() === cleanCat
-    );
+    const category = db
+      .getCategories()
+      .find((c) => c.id.toLowerCase() === cleanCat || c.name.toLowerCase() === cleanCat);
 
     if (!category) {
-      const dept = db.getDepartments().find(
-        (d) =>
-          d.id.toLowerCase() === cleanCat ||
-          d.name.toLowerCase() === cleanCat ||
-          d.name.toLowerCase().includes(cleanCat) ||
-          cleanCat.includes(d.name.toLowerCase())
-      );
-      if (dept) {
-        category = db.getCategories().find((c) => c.departmentId === dept.id);
-      }
-    }
-
-    if (!category) {
-      category = db.getCategories()[0];
+      throw new HttpError(400, `Unknown category: ${categoryId || '(none)'}`);
     }
 
     const department = db.getDepartments().find((d) => d.id === category.departmentId);
@@ -493,7 +478,7 @@ export class GrievanceService {
       throw new HttpError(403, 'Forbidden: Only the assigned field officer can submit resolution proof.');
     }
 
-    if (!['IN_PROGRESS', 'REOPENED', 'ASSIGNED'].includes(g.status)) {
+    if (g.status !== 'IN_PROGRESS') {
       throw new HttpError(400, `Cannot submit resolution for a grievance in status '${g.status}'.`);
     }
 

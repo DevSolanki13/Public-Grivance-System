@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Phone, Mail } from 'lucide-react';
 
 export default function Footer() {
@@ -9,8 +10,8 @@ export default function Footer() {
         <span><Mail size={16} />support@jansewa.in</span>
       </div>
       <div>
-        <a href="/transparency">Public statistics</a>
-        <a href="/#services">Services</a>
+        <Link to="/transparency">Public statistics</Link>
+        <a href="#services">Services</a>
         <a href="#">Privacy policy</a>
         <a href="#">Accessibility</a>
       </div>

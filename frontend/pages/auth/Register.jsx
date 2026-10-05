@@ -100,13 +100,13 @@ export default function Register() {
               name="password"
               type="password"
               required
-              minLength={6}
+              minLength={8}
               value={form.password}
               onChange={handleChange}
-              placeholder="At least 6 characters"
+              placeholder="At least 8 characters"
             />
             <small style={{ color: 'var(--text-muted, #64748b)', fontSize: '0.8rem', marginTop: 4, display: 'block' }}>
-              Must be at least 6 characters.
+              Must be at least 8 characters.
             </small>
           </div>
 

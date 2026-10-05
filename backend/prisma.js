@@ -20,6 +20,9 @@ if (isPrismaConfigured) {
     prisma = new PrismaClient({
       log: process.env.NODE_ENV === 'development' ? ['warn', 'error'] : ['error'],
     });
+    if (typeof db.setPrismaClient === 'function') {
+      db.setPrismaClient(prisma);
+    }
   } catch (err) {
     console.warn('[Prisma] Initialization warning:', err.message);
   }

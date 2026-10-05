@@ -111,10 +111,10 @@ export default function Navbar({ role }) {
           {/* Public links */}
           {effectiveRole === 'public' && !user && (
             <>
-              <a href="/#services">Services</a>
-              <a href="/#track">Track request</a>
+              <a href="#services">Services</a>
+              <a href="#track">Track request</a>
               <NavLink to="/transparency">Public stats</NavLink>
-              <a href="/#contact">Help</a>
+              <a href="#contact">Help</a>
               <Link to="/login" className="btn btn-outline btn-sm">Login</Link>
               <Link to="/register" className="btn btn-primary btn-sm">Register</Link>
             </>

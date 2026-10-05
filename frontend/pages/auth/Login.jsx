@@ -3,6 +3,9 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
 import PageLayout from '../../components/layout/PageLayout';
 
+// Demo credentials are shown in development, or in production only if VITE_SHOW_DEMO=true is set on purpose.
+const SHOW_DEMO = import.meta.env.DEV || import.meta.env.VITE_SHOW_DEMO === 'true';
+
 export default function Login() {
   const { login, demoLogin } = useAuth();
   const navigate = useNavigate();
@@ -148,7 +151,7 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Handy 1-Click Demo Credentials Box */}
+        {SHOW_DEMO && (
         <div
           style={{
             marginBottom: 16,
@@ -207,6 +210,7 @@ export default function Login() {
             Password for all demo accounts: <code>password123</code>
           </div>
         </div>
+        )}
 
         <form onSubmit={handleStandardLogin}>
           <div className="form-group">

@@ -81,8 +81,8 @@ export class AuthService {
       throw new HttpError(400, 'Please provide a valid email address.');
     }
 
-    if (!password || password.length < 6) {
-      throw new HttpError(400, 'Password must be at least 6 characters long.');
+    if (!password || password.length < 8) {
+      throw new HttpError(400, 'Password must be at least 8 characters long.');
     }
 
     const cleanEmail = email.trim().toLowerCase();
