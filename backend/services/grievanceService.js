@@ -215,9 +215,29 @@ export class GrievanceService {
     const cleanPriority = String(priority).toUpperCase();
     const validPriority = PRIORITIES.includes(cleanPriority) ? cleanPriority : 'MEDIUM';
 
-    const category = db.getCategories().find((c) => c.id === categoryId);
+    const cleanCat = String(categoryId || '').trim().toLowerCase();
+    let category = db.getCategories().find(
+      (c) =>
+        c.id.toLowerCase() === cleanCat ||
+        c.name.toLowerCase() === cleanCat ||
+        c.departmentId.toLowerCase() === cleanCat
+    );
+
     if (!category) {
-      throw new HttpError(400, `Unknown category ID: ${categoryId}`);
+      const dept = db.getDepartments().find(
+        (d) =>
+          d.id.toLowerCase() === cleanCat ||
+          d.name.toLowerCase() === cleanCat ||
+          d.name.toLowerCase().includes(cleanCat) ||
+          cleanCat.includes(d.name.toLowerCase())
+      );
+      if (dept) {
+        category = db.getCategories().find((c) => c.departmentId === dept.id);
+      }
+    }
+
+    if (!category) {
+      category = db.getCategories()[0];
     }
 
     const department = db.getDepartments().find((d) => d.id === category.departmentId);

@@ -3,13 +3,14 @@ import { Link, useSearchParams } from 'react-router-dom';
 import PageLayout from '../../components/layout/PageLayout';
 import PhotoUploader from '../../components/common/PhotoUploader';
 import api from '../../api/index.js';
-import { MapPin } from 'lucide-react';
+import { MapPin, CheckCircle2 } from 'lucide-react';
+import { useNotifications } from '../../context/NotificationContext';
 
 const CATEGORIES = [
-  'Roads & Infrastructure',
-  'Water Supply & Sewage',
-  'Sanitation & Solid Waste',
-  'Street Lighting & Electricity',
+  { id: 'cat-water', name: 'Water Supply & Sewage' },
+  { id: 'cat-roads', name: 'Roads & Infrastructure' },
+  { id: 'cat-sanitation', name: 'Sanitation & Solid Waste' },
+  { id: 'cat-electrical', name: 'Street Lighting & Electricity' },
 ];
 
 const emptyForm = {
@@ -22,12 +23,20 @@ const emptyForm = {
 
 export default function SubmitGrievance() {
   const [searchParams] = useSearchParams();
+  const { refreshNotifications } = useNotifications();
+
+  const rawCat = searchParams.get('category') || '';
+  const matched = CATEGORIES.find(
+    (c) => c.id === rawCat || c.name.toLowerCase() === rawCat.toLowerCase()
+  );
+
   const [form, setForm] = useState({
     ...emptyForm,
-    category: searchParams.get('category') || '',
+    category: matched ? matched.id : rawCat,
   });
   const [files, setFiles] = useState([]);
   const [complaintId, setComplaintId] = useState('');
+  const [toast, setToast] = useState(null);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
 
@@ -75,7 +84,12 @@ export default function SubmitGrievance() {
 
       const res = await api.createGrievance(formData);
       if (res.success && res.grievance) {
-        setComplaintId(res.grievance.complaintId);
+        const id = res.grievance.complaintId;
+        setComplaintId(id);
+        setToast({ complaintId: id });
+        if (typeof refreshNotifications === 'function') {
+          refreshNotifications();
+        }
       } else {
         setError(res.message || 'Submission failed.');
       }
@@ -90,6 +104,7 @@ export default function SubmitGrievance() {
     setForm(emptyForm);
     setFiles([]);
     setComplaintId('');
+    setToast(null);
   };
 
   return (
@@ -99,6 +114,70 @@ export default function SubmitGrievance() {
       subtitle="Fields marked * are required."
       width="narrow"
     >
+      {/* Top Right Floating Toast Notification */}
+      {toast && (
+        <div
+          role="status"
+          aria-live="polite"
+          style={{
+            position: 'fixed',
+            top: 24,
+            right: 24,
+            zIndex: 99999,
+            backgroundColor: '#0f172a',
+            color: '#ffffff',
+            padding: '16px 20px',
+            borderRadius: 12,
+            boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.35), 0 10px 10px -5px rgba(0, 0, 0, 0.1)',
+            borderLeft: '5px solid #10b981',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 14,
+            minWidth: 280,
+            animation: 'slideInRight 0.3s ease-out',
+          }}
+        >
+          <div
+            style={{
+              width: 34,
+              height: 34,
+              borderRadius: '50%',
+              backgroundColor: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              flexShrink: 0,
+              boxShadow: '0 0 12px rgba(16, 185, 129, 0.4)',
+            }}
+          >
+            <CheckCircle2 size={20} color="#ffffff" />
+          </div>
+          <div style={{ flex: 1 }}>
+            <div style={{ fontWeight: 800, fontSize: 15, color: '#f8fafc' }}>
+              Complain filed
+            </div>
+            <div style={{ fontSize: 13, color: '#94a3b8', marginTop: 2 }}>
+              Tracking ID: <span style={{ fontWeight: 700, color: '#38bdf8' }}>{toast.complaintId}</span>
+            </div>
+          </div>
+          <button
+            onClick={() => setToast(null)}
+            style={{
+              background: 'none',
+              border: 'none',
+              color: '#94a3b8',
+              fontSize: 20,
+              cursor: 'pointer',
+              padding: '0 4px',
+              lineHeight: 1,
+            }}
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {complaintId ? (
         <div className="card success-box" style={{ textAlign: 'center', padding: '36px 20px' }}>
           <h2>Grievance submitted</h2>
@@ -126,7 +205,7 @@ export default function SubmitGrievance() {
             >
               <option value="">Select a category</option>
               {CATEGORIES.map((c) => (
-                <option key={c} value={c}>{c}</option>
+                <option key={c.id} value={c.id}>{c.name}</option>
               ))}
             </select>
           </div>
