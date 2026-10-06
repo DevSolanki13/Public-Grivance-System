@@ -317,6 +317,7 @@ function SubmitGrievance() {
             <label htmlFor="subject">Subject / Title *</label>
             <input
               id="subject"
+              type="text"
               name="subject"
               required
               value={form.subject}

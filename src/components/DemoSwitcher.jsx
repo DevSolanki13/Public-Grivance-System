@@ -18,9 +18,10 @@ function DemoSwitcher() {
       admin: '/admin/dashboard',
     };
 
-    // If currently on login, register, home, or a role dashboard, navigate to the selected role dashboard
+    // If currently on home, login, register, or a role dashboard, navigate to the selected role dashboard
     const targetPath = roleRoutes[targetRole];
-    if (location.pathname.startsWith('/citizen') ||
+    if (location.pathname === '/' ||
+        location.pathname.startsWith('/citizen') ||
         location.pathname.startsWith('/officer') ||
         location.pathname.startsWith('/department') ||
         location.pathname.startsWith('/admin') ||

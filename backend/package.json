@@ -1,0 +1,26 @@
+{
+  "name": "jansewa-backend",
+  "version": "1.0.0",
+  "description": "JanSewa Public Grievance Redressal System - REST API Backend",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node --watch server.js",
+    "test": "vitest run",
+    "test:watch": "vitest"
+  },
+  "keywords": ["civic", "grievance", "express", "rest-api", "nodejs", "jansewa"],
+  "author": "Dev Solanki",
+  "license": "ISC",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.5",
+    "express": "^4.19.2",
+    "helmet": "^7.1.0",
+    "morgan": "^1.10.0"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
+  }
+}
